@@ -12,7 +12,12 @@ import SwiftData
 struct VIGILApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Player.self,
+            Goal.self,
+            GoalCompletion.self,
+            Quest.self,
+            DayLog.self,
+            AIVerdict.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
