@@ -133,7 +133,7 @@ enum GoalDashboardFormatting {
             return "\(current) / \(target) \(goal.unit)"
         case GoalType.boolean:
             let threshold = Swift.max(goal.targetValue, 1)
-            loggedToday >= threshold ? "COMPLETE" : "NOT COMPLETE"
+            return loggedToday >= threshold ? "COMPLETE" : "NOT COMPLETE"
         }
     }
 
