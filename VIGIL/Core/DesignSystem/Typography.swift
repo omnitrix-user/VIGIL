@@ -23,5 +23,8 @@ extension Font {
         static let caption: Font = .system(size: 12, weight: .regular, design: .monospaced)
 
         static let system: Font = .system(size: 14, weight: .medium, design: .monospaced)
+
+        /// Goal session countdown / elapsed digits (dashboard timer).
+        static let timerDigits: Font = .system(size: 26, weight: .semibold, design: .monospaced)
     }
 }

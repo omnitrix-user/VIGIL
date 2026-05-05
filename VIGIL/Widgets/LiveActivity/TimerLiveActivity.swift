@@ -26,7 +26,7 @@ struct VigilStopTimerIntent: LiveActivityIntent {
     static var description = IntentDescription("End the active goal session.")
 
     func perform() async throws -> some IntentResult {
-        await GoalTimerManager.shared.liveActivityStopIntentRequested()
+        await GoalTimerManager.shared.handleLiveActivityStopIntent()
         return .result()
     }
 }

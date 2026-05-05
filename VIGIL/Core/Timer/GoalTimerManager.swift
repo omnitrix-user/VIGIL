@@ -68,6 +68,11 @@ final class GoalTimerManager {
         return aid != goalId
     }
 
+    /// Duration session loaded but timer not accumulating (paused).
+    var isPausedSession: Bool {
+        activeGoalId != nil && !isRunning
+    }
+
     // MARK: — Lifecycle hooks
 
     func registerBackgroundProcessing() {
@@ -245,18 +250,48 @@ final class GoalTimerManager {
         return CompletedSession(goalId: goal.id, durationMinutes: 0, valueLogged: threshold, xpAwarded: xp, wasCompleted: true)
     }
 
+    func logCountSession(goal: Goal, units: Double, modelContext: ModelContext) throws -> CompletedSession {
+        guard goal.goalType == GoalType.count else {
+            throw GoalTimerManagerError.requiresCountGoal
+        }
+        guard let player = goal.player else {
+            throw GoalTimerManagerError.missingPlayer
+        }
+        guard units > 0 else {
+            throw GoalTimerManagerError.invalidLoggedUnits
+        }
+
+        let xp = Int((units * Double(goal.xpPerUnit)).rounded())
+        let entry = GoalCompletion(
+            loggedAt: Date(),
+            value: units,
+            goal: goal,
+            dayLog: nil
+        )
+        modelContext.insert(entry)
+        if xp != 0 {
+            StatXP.apply(delta: xp, category: goal.category, to: player)
+        }
+        try modelContext.save()
+
+        return CompletedSession(
+            goalId: goal.id,
+            durationMinutes: 0,
+            valueLogged: units,
+            xpAwarded: max(0, xp),
+            wasCompleted: true
+        )
+    }
+
     // MARK: — Live Activity intent bridge
 
     func handleLiveActivityStopIntent() async {
         guard let context = VIGILPersistence.makeContext(),
-              activeGoalId != nil
-        else {
+              let gid = activeGoalId else {
             resetLocalSession()
             await teardownLiveActivity()
             return
         }
-
-        guard let gid = activeGoalId else { return }
 
         var fetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.id == gid })
         fetch.fetchLimit = 1
@@ -300,7 +335,7 @@ final class GoalTimerManager {
     private func startSecondTicker() {
         tick?.invalidate()
         guard activeGoalId != nil else { return }
-        tick = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        let t = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
                 self.recomputeElapsed()
@@ -308,9 +343,8 @@ final class GoalTimerManager {
                 await self.liveActivitySynchronize()
             }
         }
-        if let timer = tick {
-            RunLoop.main.add(timer, forMode: .common)
-        }
+        RunLoop.main.add(t, forMode: .common)
+        tick = t
     }
 
     private func stopSecondTicker() {
@@ -482,16 +516,20 @@ enum GoalTimerManagerError: LocalizedError {
     case anotherSessionActive
     case requiresDurationGoal
     case requiresBooleanGoal
+    case requiresCountGoal
     case missingPlayer
     case noActiveSession
+    case invalidLoggedUnits
 
     var errorDescription: String? {
         switch self {
         case .anotherSessionActive: return "Another session is active."
         case .requiresDurationGoal: return "Timer supports duration objectives only."
         case .requiresBooleanGoal: return "Objective is not boolean."
+        case .requiresCountGoal: return "Objective is not a count objective."
         case .missingPlayer: return "No Player bound to objective."
         case .noActiveSession: return "Timer already cleared."
+        case .invalidLoggedUnits: return "Nothing to log."
         }
     }
 }

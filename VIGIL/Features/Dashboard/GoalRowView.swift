@@ -10,8 +10,6 @@ struct GoalRowView: View {
     let loggedToday: Double
     let isExpanded: Bool
     let onToggleExpanded: () -> Void
-    let onStartSession: () -> Void
-
     private var xpAvailableLabel: String {
         GoalDashboardFormatting.xpPotentialLabel(for: goal, loggedToday: loggedToday)
     }
@@ -83,29 +81,7 @@ struct GoalRowView: View {
 
     @ViewBuilder
     private var expansionBlock: some View {
-        switch goal.goalType {
-        case GoalType.duration:
-            Button(action: onStartSession) {
-                Text("START SESSION")
-                    .font(Font.vigil.headline)
-                    .tracking(3)
-                    .foregroundStyle(Color.bg.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Spacing.sm.rawValue)
-                    .background(Color.accent.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-            }
-            .buttonStyle(.plain)
-            .opacity(goal.isActive ? 1 : 0.45)
-            .disabled(!goal.isActive)
-            .accessibilityLabel("Start session for \(goal.name)")
-        default:
-            Text("USE PROFILE FOR MANUAL LOGGING.")
-                .font(Font.vigil.caption)
-                .foregroundStyle(Color.text.muted)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-        }
+        GoalTimerView(goal: goal, loggedToday: loggedToday)
     }
 }
 

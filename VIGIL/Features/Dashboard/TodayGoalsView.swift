@@ -62,9 +62,6 @@ struct TodayGoalsView: View {
                     isExpanded: expandedGoalIDs.contains(goal.id),
                     onToggleExpanded: {
                         toggle(goal.id)
-                    },
-                    onStartSession: {
-                        // Timer wiring handled in a later feature pass.
                     }
                 )
             }
