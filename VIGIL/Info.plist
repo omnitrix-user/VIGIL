@@ -6,6 +6,8 @@
 	<string>The system requires Health data to observe you. Without it, strength and spirit metrics stay incomplete.</string>
 	<key>Privacy - Health Updates Usage Description</key>
 	<string>The system requires access to your health data.</string>
+	<key>NSFamilyControlsUsageDescription</key>
+	<string>The system requires Screen Time access to enforce no-phone blocks. Without it, blocks cannot be scheduled.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

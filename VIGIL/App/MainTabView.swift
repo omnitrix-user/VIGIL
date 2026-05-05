@@ -3,11 +3,14 @@
 //  VIGIL
 //
 
+import SwiftData
 import SwiftUI
 import UIKit
 
 struct MainTabView: View {
     @Environment(AppRouter.self) private var appRouter
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         @Bindable var appRouter = appRouter
@@ -35,6 +38,15 @@ struct MainTabView: View {
         .tint(Color.accent.primary)
         .onAppear {
             applyTabBarAppearance()
+            VIGILPersistence.install(container: modelContext.container, mainContext: modelContext)
+            ScreenTimeManager.shared.modelContext = modelContext
+            BlockScheduler.shared.startObservingMonitorBridge()
+            BlockScheduler.shared.flushPendingBridgeEvents()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                BlockScheduler.shared.flushPendingBridgeEvents()
+            }
         }
     }
 
