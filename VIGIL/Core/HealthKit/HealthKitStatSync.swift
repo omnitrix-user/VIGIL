@@ -39,12 +39,12 @@ enum HealthKitStatSync {
         let strengthTarget = workoutXP + stepXP
 
         var spiritTarget = HealthKitAdapter.mindfulXP(minutes: mindfulMinutes)
-        if let sleep {
-            spiritTarget += HealthKitAdapter.sleepXP(hours: sleep.totalHours, quality: sleep.quality)
+        if let summary = sl {
+            spiritTarget += HealthKitAdapter.sleepXP(hours: summary.totalHours, quality: summary.quality)
         }
 
         let dayId = calendarDayString(for: Date())
-        applyTargets(
+        await applyTargets(
             dayId: dayId,
             player: player,
             modelContext: modelContext,
@@ -60,7 +60,7 @@ enum HealthKitStatSync {
         modelContext: ModelContext,
         strengthTarget: Int,
         spiritTarget: Int
-    ) {
+    ) async {
         var ledger = loadLedger()
         let previous = ledger[dayId] ?? DayTotals(strength: 0, spirit: 0)
 
@@ -88,7 +88,7 @@ enum HealthKitStatSync {
         ledger[dayId] = DayTotals(strength: strengthTarget, spirit: spiritTarget)
         saveLedger(ledger)
 
-        try? modelContext.save()
+        try? await modelContext.save()
     }
 
     private static func loadLedger() -> [String: DayTotals] {
