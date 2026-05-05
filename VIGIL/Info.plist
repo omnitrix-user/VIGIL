@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>The system requires Health data to observe you. Without it, strength and spirit metrics stay incomplete.</string>
 	<key>Privacy - Health Updates Usage Description</key>
 	<string>The system requires access to your health data.</string>
 	<key>UIBackgroundModes</key>
@@ -9,6 +11,7 @@
 		<string>fetch</string>
 		<string>processing</string>
 		<string>remote-notification</string>
+		<string>healthkit</string>
 	</array>
 </dict>
 </plist>

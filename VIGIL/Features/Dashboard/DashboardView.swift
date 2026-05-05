@@ -7,6 +7,7 @@ import SwiftData
 import SwiftUI
 
 struct DashboardView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \Player.createdAt) private var players: [Player]
 
     private var player: Player? {
@@ -20,6 +21,15 @@ struct DashboardView: View {
 
             if let player {
                 dashboardContent(player: player)
+                    .task(id: player.id) {
+                        await runHealthSynchronization(for: player)
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: .vigilHealthKitDataChanged)) { _ in
+                        guard let current = players.first else { return }
+                        Task {
+                            await runHealthSynchronization(for: current)
+                        }
+                    }
             } else {
                 Text("The system is waiting for you.")
                     .font(Font.vigil.body)
@@ -71,5 +81,15 @@ struct DashboardView: View {
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
             .fixedSize(horizontal: false, vertical: true)
+    }
+
+    @MainActor
+    private func runHealthSynchronization(for player: Player) async {
+        try? await HealthKitManager.shared.requestAuthorization()
+        await HealthKitStatSync.syncTodayHealthIntoPlayer(
+            player: player,
+            modelContext: modelContext
+        )
+        await HealthKitManager.shared.startBackgroundObserversIfNeeded()
     }
 }
