@@ -123,8 +123,12 @@ final class HealthKitManager {
                     continuation.resume(returning: 0)
                     return
                 }
-                let qty = statistics?.sumQuantity()?.doubleValue(for: HKUnit.count())
-                continuation.resume(returning: Int(qty?.rounded() ?? 0))
+                guard let quantity = statistics?.sumQuantity() else {
+                    continuation.resume(returning: 0)
+                    return
+                }
+                let raw = quantity.doubleValue(for: HKUnit.count())
+                continuation.resume(returning: Int(raw.rounded()))
             }
             store.execute(query)
         }
@@ -207,10 +211,12 @@ final class HealthKitManager {
                     continuation.resume(returning: nil)
                     return
                 }
-                guard let average = statistics?.averageQuantity()?.doubleValue(for: HKUnit.count().unitDivided(by: .minute())) else {
+                guard let qty = statistics?.averageQuantity() else {
                     continuation.resume(returning: nil)
                     return
                 }
+                let bpmUnit = HKUnit.count().unitDivided(by: .minute())
+                let average = qty.doubleValue(for: bpmUnit)
                 continuation.resume(returning: Int(average.rounded()))
             }
             store.execute(query)
@@ -285,8 +291,8 @@ final class HealthKitManager {
         let kcal = workout.totalEnergyBurned?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
 
         var avgHR: Int?
-        if let heartRateType, let stats = workout.statistics(for: heartRateType) {
-            let q = stats.averageQuantity()
+        if let heartRateType, let stats = workout.statistics(for: heartRateType),
+           let q = stats.averageQuantity() {
             let bpm = HKUnit.count().unitDivided(by: .minute())
             avgHR = Int(q.doubleValue(for: bpm).rounded())
         }
@@ -301,15 +307,14 @@ final class HealthKitManager {
     }
 
     private static func isSampleAsleepSleep(_ sample: HKCategorySample) -> Bool {
-        if #available(iOS 16.0, *) {
-            switch sample.sleepAnalysisValue {
-            case .asleep, .asleepUnspecified, .asleepCore, .asleepDeep, .asleepREM:
-                return true
-            default:
-                return false
-            }
-        } else {
-            return sample.value == HKCategoryValueSleepAnalysis.asleep.rawValue
+        guard let value = HKCategoryValueSleepAnalysis(rawValue: sample.value) else {
+            return false
+        }
+        switch value {
+        case .asleepUnspecified, .asleepCore, .asleepDeep, .asleepREM:
+            return true
+        default:
+            return false
         }
     }
 
