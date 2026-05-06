@@ -11,13 +11,20 @@
 - Tagline: "The system that never sleeps."
 - Type: iOS personal discipline system — NOT a habit tracker
 - Personality: Cold, ruthless, no-mercy AI system. Never warm. Never motivational.
-- The user is the PLAYER. The app is the SYSTEM. The system does not care about feelings.
+- The user is the PLAYER. The app is the SYSTEM.
+- Visual identity: cyberpunk terminal skeleton + Solo Leveling soul.
 - Platform: iPhone only, iOS 18+, portrait orientation only
 - Language support: English only (Phase 1)
 - Appearance: Dark mode default, light mode option in Settings
 - No iPad support in Phase 1
-
----
+- Typography baseline: SF Mono for all data/system copy/numbers/timestamps.
+- Cinematic headers: Orbitron (or similar futuristic display); fallback SF Pro Display Black.
+- UI syntax: bracketed controls and labels (`[ENTER]`, `[ACKNOWLEDGED]`, `[RANK: E]`, `[SUBJECT: AYUSH]`).
+- Visual effects: subtle CRT scanline overlays + 1–2 frame glitch transitions.
+- Text casing: uppercase by default except long body content.
+- Shape system: sharp 90-degree look, radius 0–4 max.
+- Card style: thin 1px `accent.primary` border.
+- Core background: pure OLED black `#000000`.
 
 ## 2. TECH STACK — USE EXACTLY THESE, NOTHING ELSE
 
@@ -178,197 +185,113 @@ VIGIL/
 
 ### Player (@Model)
 ```swift
-// ONE player per device in Phase 1
 var id: UUID
 var username: String
+var profileImageData: Data?
 var createdAt: Date
-var currentRank: Rank                  // enum: E, D, C, B, A, S, SS, SSS
+var currentRank: Rank
 var totalXP: Int
-var intellect: StatBlock
+var intelligence: StatBlock
 var strength: StatBlock
-var spirit: StatBlock
+var vitality: StatBlock
 var discipline: StatBlock
-var perfectDayStreak: Int              // ALL goals hit — breaks if any goal missed
-var showedUpStreak: Int                // At least something logged — breaks only on zero-activity day
-var longestPerfectStreak: Int
-var longestShowedUpStreak: Int
-var titles: [String]                   // All earned titles
-var activeTitle: String?               // Currently displayed
-var isNewGamePlus: Bool                // True after first SSS → reset
-var newGamePlusCount: Int              // How many prestige cycles
-var hasGoldenCrown: Bool               // Permanent after first SSS reached
-var signatureHash: String              // From contract signing
-var shamePostsEnabled: Bool
-var wakeTime: Date
-var sleepTime: Date
-var focusHoursStart: Date
-var focusHoursEnd: Date
-var restHoursStart: Date
-var restHoursEnd: Date
-var dailyResetTime: Date               // Calculated: wakeTime minus 30 minutes
-var notificationsVerdict: Bool
-var notificationsQuests: Bool
-var notificationsViolations: Bool
-var notificationsMorningBrief: Bool
-var isLightModeEnabled: Bool
-var awakeningQuestCompleted: Bool
-var hasUnawokenTag: Bool               // Permanent if Awakening Quest failed
-var friendCode: String                 // 6-character code for Phase 2 social
-var supabaseUserId: String?            // Phase 2 only
-var goals: [Goal]
-var quests: [Quest]
-var dailyLogs: [DayLog]
-var verdicts: [AIVerdict]
+// Existing streak/title/settings/relationship fields remain as defined unless superseded elsewhere
 ```
 
 ### StatBlock (embedded value type)
 ```swift
 var currentXP: Int
 var totalXP: Int
-var level: Int                         // 1–100
+var level: Int // 1–100
 var xpToNextLevel: Int
 var debuffActive: Bool
 var debuffExpiresAt: Date?
-var weekHistory: [Int]                 // Last 7 days XP gain for mini chart
+var weekHistory: [Int]
 ```
 
 ### Goal (@Model)
 ```swift
+// Pool bug fix rule: targetValue must come from Slider/Stepper/Single-select, never free-text parsing.
 var id: UUID
-var name: String                       // User-defined e.g. "Build VIGIL app", "Pool max 1hr"
-var category: StatCategory             // .intellect / .strength / .spirit / .discipline
-var goalType: GoalType                 // .duration / .count / .boolean
-var targetValue: Double                // minutes, sessions, reps etc.
-var unit: String                       // "minutes", "sessions", "reps"
-var isCapGoal: Bool                    // true = do NOT exceed (e.g. entertainment cap)
-var xpPerUnit: Int                     // Auto-calculated by system, not user-defined
-var xpPenaltyPerUnit: Int              // For cap goals: XP lost per unit over cap
+var name: String
+var category: StatCategory
+var goalType: GoalType
+var targetValue: Double
+var unit: String
+var isCapGoal: Bool
+var xpPerUnit: Int
+var xpPenaltyPerUnit: Int
 var isActive: Bool
 var colorHex: String
-var icon: String                       // SF Symbol name
-var startDate: Date                    // User chose this during creation
+var icon: String
+var startDate: Date
 var completions: [GoalCompletion]
 var player: Player?
 ```
-
-### Quest (@Model)
-```swift
-var id: UUID
-var title: String
-var questDescription: String
-var questType: QuestType               // .shadow / .ascension / .reckoning / .awakening
-var assignedAt: Date
-var deadline: Date?
-var xpReward: Int
-var xpPenalty: Int
-var statTarget: StatCategory
-var status: QuestStatus                // .active / .completed / .failed / .expired
-var failureConsequence: ConsequenceType
-var isReactive: Bool
-var triggerPattern: String?
-var verificationMethod: VerificationMethod  // .healthKit / .screenTime / .timer / .manual / .ai
-var player: Player?
-```
-
-### DayLog (@Model)
-```swift
-var id: UUID
-var date: Date
-var goalCompletions: [GoalCompletion]
-var phoneBlocksScheduled: Int
-var phoneBlocksKept: Int
-var sleepHours: Double?
-var sleepQuality: SleepQuality?        // .poor / .fair / .good / .excellent
-var workoutMinutes: Int?
-var heartRateAvg: Int?
-var disciplineScore: Double            // 0.0–1.0
-var totalXPEarned: Int
-var totalXPLost: Int
-var verdict: AIVerdict?
-var isPerfectDay: Bool                 // ALL goals hit, no violations
-var didShowUp: Bool                    // At least one goal logged
-var player: Player?
-```
-
-### AIVerdict (@Model)
-```swift
-var id: UUID
-var deliveredAt: Date
-var verdictType: VerdictType           // .reward / .punishment / .warning / .observation / .weeklyReview / .monthlyReview
-var message: String                    // Cold AI-generated text
-var consequenceApplied: ConsequenceType?
-var xpDelta: Int                       // Net XP change (can be negative)
-var rankChangeDelta: Int
-var titlesStripped: [String]
-var titlesAwarded: [String]
-var questsIssued: [UUID]
-var triggerContext: String
-var wasAcknowledged: Bool
-var acknowledgedAt: Date?
-var aiFollowUpMessage: String?         // Cold response after user taps ACKNOWLEDGED
-var player: Player?
-```
-
----
 
 ## 6. ENUMS — ALL DEFINED HERE
 
 ```swift
 enum Rank: String, CaseIterable, Codable {
-    case E, D, C, B, A, S, SS, SSS
+ case E, D, C, B, A, S, SS, SSS
 }
 
 enum StatCategory: String, Codable {
-    case intellect, strength, spirit, discipline
+ case intelligence, strength, vitality, discipline
 }
 
 enum GoalType: String, Codable {
-    case duration    // time-based (minutes)
-    case count       // repetition-based
-    case boolean     // did it or didn't
+ case duration
+ case count
+ case boolean
+}
+
+enum VerdictOption: String, Codable {
+ case limit
+ case eliminate
+ case replace
+ case trackOnly
 }
 
 enum QuestType: String, Codable {
-    case shadow      // random AI surprise
-    case ascension   // XP threshold unlock
-    case reckoning   // triggered by failure pattern
-    case awakening   // Day 1 tutorial quest
+ case shadow
+ case ascension
+ case reckoning
+ case awakening
 }
 
 enum QuestStatus: String, Codable {
-    case active, completed, failed, expired
+ case active, completed, failed, expired
 }
 
 enum VerdictType: String, Codable {
-    case reward, punishment, warning, observation
-    case weeklyReview, monthlyReview
+ case reward, punishment, warning, observation
+ case weeklyReview, monthlyReview
 }
 
 enum ConsequenceType: String, Codable {
-    case xpLoss
-    case statDebuff
-    case titleStripped
-    case streakReset
-    case rankDemotion
-    case shamePost
-    case questIssued
-    case nuclear          // all of the above
+ case xpLoss
+ case statDebuff
+ case titleStripped
+ case streakReset
+ case rankDemotion
+ case shamePost
+ case questIssued
+ case nuclear
 }
 
 enum VerificationMethod: String, Codable {
-    case healthKit
-    case screenTime
-    case timer
-    case manual
-    case ai
+ case healthKit
+ case screenTime
+ case timer
+ case manual
+ case ai
 }
 
 enum SleepQuality: String, Codable {
-    case poor, fair, good, excellent
+ case poor, fair, good, excellent
 }
 ```
-
----
 
 ## 7. NAVIGATION ARCHITECTURE
 
@@ -394,57 +317,45 @@ TabView {
 
 ---
 
-## 8. ONBOARDING FLOW — 10 EXACT SCREENS
+## 8. ONBOARDING FLOW — REBUILT EVALUATION SYSTEM
 
-All screens share dark OLED aesthetic. Use a coordinator pattern with enum-driven state.
+- Onboarding is mandatory and cannot be skipped.
+- Flow is resumable if app closes mid-sequence via SwiftData `OnboardingProgress`.
+- Show progress indicator: `[N / TOTAL SYSTEM QUERIES ANSWERED]` on each step.
+- Abandon attempt message: "You attempted to abandon evaluation. The system has noted this hesitation. Continue."
+- Every multi-select triggers cascading follow-up question screens.
+- Each phase ends with AI-delivered PROFILE FRAGMENT.
 
-```
-OnboardingStep enum:
-case scan                    // Screen 1 — 2-3 second animated sequence
-case questionOne             // Screen 2 — "State your name, player."
-case questionTwo             // Screen 3 — "What are you building or becoming?"
-case questionThree           // Screen 4 — "What do you consistently fail to do?"
-case questionFour            // Screen 5 — "How serious are you? 1–10." (slider)
-case questionFive            // Screen 6 — "When does your day start? When do you sleep?"
-case questionSix             // Screen 7 — "Define your goals." (goal setup inline)
-case goalSetup               // Screen 8 — Full goal creation flow
-case contract                // Screen 9 — Contract text + finger signature
-case permissions             // Screen 10 — In-character permission requests
-// → Dashboard (onboarding dismissed)
-```
+Phase order:
+- Phase 0: Scan
+- Phase 1: Identity
+- Phase 2: Intelligence
+- Phase 3: Strength
+- Phase 4: Vitality
+- Phase 5: Daily Goal Confirmation
+- Phase 6: Permissions
+- Phase 7: Contract
+- Dashboard
 
-**Scan screen specifics:**
-- OLED black, full screen
-- Glitch text animation: "Unknown entity detected..."
-- Fake scan progress bar
-- Subtle vibration (UIImpactFeedbackGenerator .medium)
-- Auto-advances at 2.5 seconds, no tap required
-
-**Permission screen specifics:**
-- Each permission explained in-character before iOS system dialog fires
-- "The system requires access to observe you. Without it, your data is incomplete."
-- Request order: Notifications → HealthKit → FamilyControls (Screen Time)
-- If denied: continue to dashboard, show reduced capacity banner
-- Never block app launch on permission denial
-
----
+Locks:
+- Permissions occur after all four data-capture phases and daily-goal confirmation.
+- Contract appears after permissions and references player-specific onboarding goals.
+- Onboarding completion issues immediate welcome quest and initializes boot context.
 
 ## 9. BOOT SEQUENCE
 
-Triggers:
-1. First app open of each day (compare last open date to today)
-2. Whenever a new quest has arrived since last open
+Standard boot plays on every launch (3 seconds):
+- Frame 1 (0.0–0.6s): pure black + dim eye symbol fade-in
+- Frame 2 (0.6–1.4s): eye glow burst with accent.primary radial bloom
+- Frame 3 (1.4–2.4s): `VIGIL` materialises with glitch (RGB split + positional jitter), display font
+- Frame 4 (2.4–3.0s): horizontal scanline sweep top-to-bottom into dashboard
 
-Duration: 2.5 seconds exactly
-Content: Always identical (ritual consistency — never randomise)
-- Frame 1 (0.0–0.8s): OLED black, single eye icon pulses in
-- Frame 2 (0.8–1.8s): "VIGIL" text materialises letter by letter
-- Frame 3 (1.8–2.5s): Tagline fades in: "The system is watching."
-- Auto-transitions to Dashboard
-
-Implementation: Full screen cover with `.transition(.opacity)` dismiss
-
----
+Extended contextual variant (4 seconds total) adds 1 second context text:
+- first open after onboarding: `INITIALISATION COMPLETE. SUBJECT [NAME] BOUND.`
+- first open of new day: `DAY [N]. THE SYSTEM HAS BEEN WATCHING.`
+- after punishment issued: `YOUR ABSENCE WAS NOTED.`
+- after streak milestone: `DAY [N] CONFIRMED. CONTINUE.`
+- after rank change: `RANK STATUS: MODIFIED.`
 
 ## 10. DASHBOARD LAYOUT
 
@@ -479,25 +390,12 @@ Implementation: Full screen cover with `.transition(.opacity)` dismiss
 
 ## 11. GOAL LOGGING UX
 
-**Tap goal row → inline expansion reveals:**
-- If duration goal: "START SESSION" button → starts timer
-- If count/boolean goal: increment stepper or toggle
-- "LOG MANUALLY" option always available
-- "ADD UNREGISTERED SESSION" button for quick-add of new goal type
-
-**Active timer UI:**
-- In-app: persistent banner at top of screen (does NOT interrupt navigation)
-- Lock screen: Live Activity (ActivityKit)
-- Dynamic Island: timer countdown (takes priority over quest deadline)
-- If app closed mid-session: partial credit for duration goals, zero for boolean
-- Background timer continues via background task
-
-**Session completion:**
-- Duration goals: XP = minutes completed × xpPerUnit (proportional)
-- Boolean goals: XP only if fully completed, zero for partial
-- Cap goals: XP earned up to cap, penalty XP for time over cap
-
----
+- No free-text numeric parsing for goal targets or cap values (critical pool bug fix).
+- Numeric inputs must use slider, stepper, or constrained single-select controls only.
+- AI auto-generates daily goals from Phase 2/3/4 onboarding data at onboarding completion.
+- Player reviews generated list and confirms which goals are active (minimum one active).
+- Dashboard includes `MANAGE DAILY GOALS` entry point to daily goal management.
+- Non-daily activities are tracked as weekly/monthly goals and are not part of daily list.
 
 ## 12. AI ENGINE — APPLE FOUNDATION MODELS
 
@@ -547,31 +445,13 @@ Maximum 3 sentences per message. Always refer to the user as "Player" or by thei
 
 ## 13. QUEST SYSTEM
 
-**Quest Board (Quests tab):**
-- Three-column layout: ACTIVE | COMPLETED | FAILED
-- Failed quests: NEVER deleted, rendered with reduced opacity
-- Empty ACTIVE state: "No quests assigned. The system is watching. Perform and they will come."
-- Empty FAILED state: "The system has not needed to punish you. Yet."
+Quest arrival sources (combined):
+1. Immediate welcome quest within 30 seconds of onboarding completion
+2. Daily morning quest issued at wake time with morning brief
+3. Idle-trigger quest issued when inactivity exceeds 18 hours
 
-**Quest completion flow:**
-1. Tap quest card → push to QuestDetailView
-2. QuestDetailView shows: type badge, full description, deadline countdown, XP at stake
-3. "SUBMIT COMPLETION" button
-4. Verification check: auto-verify via HealthKit/ScreenTime/timer data where possible
-5. If manual: "MARK COMPLETE" with confirmation
-6. Loading state: pulsing eye + "The system is evaluating your submission..."
-7. Result: instant XP animation on success, punishment on failure
-
-**Awakening Quest (mandatory Day 1):**
-- Three sub-tasks revealed one at a time within "Survive 24 hours" framing
-- Overarching: "Survive your first 24 hours. The system will evaluate at midnight."
-- Sub-task 1 (reveals immediately): Start a focus session (teaches timer)
-- Sub-task 2 (reveals after task 1): Log any activity (teaches manual logging)
-- Sub-task 3 (reveals after task 2): Review your stats screen (teaches navigation)
-- Failure of ANY sub-task: permanent "Unawakened" tag added to Player.hasUnawokenTag
-- Normal quests do NOT appear until Awakening Quest is complete
-
----
+Implementation:
+- `QuestTriggerService.swift` handles all trigger sources and avoids duplicate issuance collisions.
 
 ## 14. NO-PHONE BLOCK SYSTEM
 
@@ -673,62 +553,41 @@ Reckoning Quest failure: always results in rank demotion (non-negotiable)
 
 ---
 
-## 19. DESIGN SYSTEM — USE THESE TOKENS EVERYWHERE
+## 19. DESIGN SYSTEM — LOCKED TOKENS AND STYLE
 
-### Colours (define in Colors.swift as static extensions on Color)
+### Visual Language
+- Hybrid style: cyberpunk terminal skeleton + Solo Leveling soul
+- OLED-first black base: `#000000`
+- Bracketed syntax across UI affordances and labels
+- Thin borders, sharp corners, sparse glow accents
+- Subtle scanline overlays for system-message containers
+
+### Colours (in `Colors.swift`)
 ```swift
-// Backgrounds
-Color.bg.primary      = #0A0A0F   // OLED black — main background
-Color.bg.secondary    = #0E0E1E   // Cards, sheets
-Color.bg.tertiary     = #12122A   // Elevated surfaces
-
-// Accent
-Color.accent.primary  = #6C63FF   // Brand colour, XP bars, CTAs, active tab glow
-Color.accent.secondary = #A78BFA  // Headings, secondary highlights
-Color.accent.gold     = #F59E0B   // Rank S+, golden crown, elite achievements
-Color.accent.electric = #3B82F6   // Electric blue (app icon accent, links)
-
-// Status
-Color.status.danger   = #EF4444   // Punishments, violations, failures
-Color.status.success  = #22C55E   // Completions, rewards
-Color.status.warning  = #F97316   // Warnings, deadlines approaching
-
-// Text
-Color.text.primary    = #E2E8F0   // Main text
-Color.text.secondary  = #94A3B8   // Secondary text, labels
-Color.text.muted      = #64748B   // Timestamps, metadata
-
-// Rank colours
-Color.rank.E = #4B5563 | Color.rank.D = #1D4ED8 | Color.rank.C = #7C3AED
-Color.rank.B = #6D28D9 | Color.rank.A = #4C1D95 | Color.rank.S = #F59E0B
-Color.rank.SS = #D97706 | Color.rank.SSS = #6C63FF (animated)
+Color.bg.primary = #000000
+Color.bg.secondary = #0A0A14
+Color.bg.tertiary = #0E0E1E
+Color.accent.primary = #6C63FF
+Color.accent.secondary = #A78BFA
+Color.accent.gold = #F59E0B
+Color.status.danger = #EF4444
+Color.status.success = #22C55E
+Color.text.primary = #E2E8F0
+Color.text.secondary = #94A3B8
+Color.text.muted = #64748B
+Color.scanline.color = #6C63FF (opacity 0.04)
 ```
 
-### Typography (define in Typography.swift)
+### Typography (in `Typography.swift`)
 ```swift
-// Always use these, never hardcode font sizes
-Font.vigil.display     = SF Pro Rounded, 48pt, Black weight    // Rank on rank card
-Font.vigil.titleLarge  = SF Pro Display, 34pt, Bold            // Screen titles
-Font.vigil.title       = SF Pro Display, 28pt, Semibold        // Section headers
-Font.vigil.headline    = SF Pro Text, 17pt, Semibold           // Card titles
-Font.vigil.body        = SF Pro Text, 15pt, Regular            // Descriptions
-Font.vigil.caption     = SF Mono, 12pt, Regular                // XP numbers, timestamps
-Font.vigil.system      = SF Mono, 14pt, Medium                 // ALL AI-generated text
-// NO Dynamic Type — VIGIL controls its own typography
-// Use .fixedSize() where needed to prevent system font scaling
+Font.vigil.display = Orbitron 48 black (fallback SF Pro Display Black, -2 tracking)
+Font.vigil.titleLarge = SF Mono 28 bold uppercase
+Font.vigil.title = SF Mono 22 bold uppercase
+Font.vigil.headline = SF Mono 17 semibold uppercase
+Font.vigil.body = SF Mono 14 regular
+Font.vigil.system = SF Mono 13 medium
+Font.vigil.caption = SF Mono 11 regular
 ```
-
-### Spacing (define in Spacing.swift)
-```swift
-Spacing.xs  = 4pt
-Spacing.sm  = 8pt
-Spacing.md  = 16pt
-Spacing.lg  = 24pt
-Spacing.xl  = 32pt
-Spacing.xxl = 48pt
-```
-
----
 
 ## 20. LOADING STATES
 
@@ -814,19 +673,18 @@ Tab structure inside Profile → System Log:
 
 ## 26. PROFILE STRUCTURE
 
-ProfileView contains a List of sections:
-1. Stats → pushes to StatsOverviewView
-2. Goals → pushes to GoalListView
-3. System Log → pushes to SystemLogView
-4. Settings → pushes to SettingsView
+Profile is a dossier screen:
+1. Header with large circular PFP + `[USERNAME]` + `RANK: [X]` and XP-to-next thin progress bar
+2. Four-stat grid (Intelligence, Strength, Vitality, Discipline) with level + XP
+3. Identity panel: age, life situation, primary goal
+4. Achievements strip: titles + golden crown indicator
+5. System Messages feed: scrollable AI verdict stream
+6. Full Audit Trail link into System Log
+7. Bottom controls: Edit Profile, Settings, Reset System
 
-At top of ProfileView:
-- Mini rank card (tappable → expands to shareable full rank card)
-- Share options: export as image card OR generate public profile link
-- Golden crown indicator visible if hasGoldenCrown = true
-- "Unawakened" tag visible if hasUnawokenTag = true
-
----
+PFP requirements:
+- Picker sources: photo library (`PHPickerViewController`) and camera (`UIImagePickerController`)
+- Compress to JPEG <= 500KB before persisting in `Player.profileImageData`
 
 ## 27. STATS SCREEN
 
@@ -973,3 +831,77 @@ If something is not in this file, ask before implementing.
 If something contradicts this file, this file wins.*
 
 *The system is watching.*
+
+## 36. CASCADING QUESTIONS PATTERN
+
+When a user selects any item in a multi-select flow, next screens must ask specifics:
+- A: Identify the source (text with contextual examples)
+- B: Frequency (single-select cadence)
+- C: Duration per session (slider)
+- D: State your verdict (`LIMIT` / `ELIMINATE` / `REPLACE` / `TRACK`)
+- E: If `LIMIT`, capture cap via slider with unit-specific range
+
+System result:
+- `LIMIT` creates cap goal
+- `ELIMINATE` creates zero-tolerance violation tracking goal
+- `REPLACE` creates substitute-linked goal
+- `TRACK` creates no-consequence tracking goal
+
+No free-text numeric parsing is allowed for this pipeline.
+
+## 37. ACTIVITY AUTO-CATEGORIZATION
+
+- Every logged activity (manual or timer) is auto-categorized by AI into one stat.
+- Prompt input: activity name. Prompt output schema: `{stat: String, reasoning: String}`.
+- UI displays classification with reasoning, e.g. `Morning walk -> STRENGTH (physical activity)`.
+- Player can override AI category before final save.
+
+## 38. RANK DISPLAY STANDARD
+
+- Rank must render as `RANK: E` (or equivalent rank value) everywhere.
+- Rank label uses SF Mono style.
+- Thin XP-to-next-rank bar is always shown beneath rank label.
+
+## 39. RESET SYSTEM
+
+- Settings includes `RESET SYSTEM` button in `status.danger`.
+- Full-screen confirmation requires exact text input: `CONFIRM`.
+- Warning copy: `This will erase all data. Streaks, ranks, titles, and history will be lost. The system will not remember you. Type CONFIRM to proceed.`
+- Confirm action wipes all SwiftData and returns to onboarding.
+
+## 40. INTUITIVENESS
+
+- First-time contextual tour overlay on entering each tab (Dashboard / Quests / Profile).
+- Persist tour state in UserDefaults keys:
+  - `hasSeenTour.dashboard`
+  - `hasSeenTour.quests`
+  - `hasSeenTour.profile`
+- Add persistent `?` help icon on every main screen; opens screen-specific help overlay.
+
+## 41. FEEDBACK SYSTEM
+
+- Location: Profile -> Settings -> `SEND SIGNAL TO ARCHITECT`.
+- Mode A structured: Bug / Feature / Insight + title + description (+ severity for bugs).
+- Mode B quick rant: single freeform text area.
+- Persist entries in SwiftData model `FeedbackEntry`.
+- `EXPORT REPORTS` composes formatted feedback report and opens Mail app via `mailto:` with prefilled body.
+- Code note required: `Phase 2 will replace this with PostHog + Sentry.`
+
+## 42. USERNAME DISPLAY UTILITY
+
+```swift
+extension String {
+    var asSystemID: String {
+        "[\(self.uppercased())]"
+    }
+}
+```
+
+- Store raw username input unchanged.
+- Render username everywhere with `.asSystemID`.
+
+## 43. PERMISSIONS + CONTRACT ORDER
+
+- Permissions screen appears after all onboarding data phases are complete.
+- Contract appears after permissions, just before dashboard reveal.
+- Contract text must reference goals collected during onboarding.

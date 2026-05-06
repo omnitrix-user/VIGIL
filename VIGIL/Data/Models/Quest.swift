@@ -34,7 +34,7 @@ final class Quest {
         deadline: Date? = nil,
         xpReward: Int = 0,
         xpPenalty: Int = 0,
-        statTarget: StatCategory = StatCategory.intellect,
+        statTarget: StatCategory = StatCategory.intelligence,
         status: QuestStatus = QuestStatus.active,
         failureConsequence: ConsequenceType = ConsequenceType.xpLoss,
         isReactive: Bool = false,

@@ -13,7 +13,7 @@ struct StatBarsView: View {
             StatBarRowView(
                 title: "INTELLECT",
                 systemImage: "brain.head.profile",
-                block: player.intellect,
+                block: player.intelligence,
                 isDiscipline: false
             )
             StatBarRowView(
@@ -23,9 +23,9 @@ struct StatBarsView: View {
                 isDiscipline: false
             )
             StatBarRowView(
-                title: "SPIRIT",
+                title: "VITALITY",
                 systemImage: "flame.fill",
-                block: player.spirit,
+                block: player.vitality,
                 isDiscipline: false
             )
             StatBarRowView(

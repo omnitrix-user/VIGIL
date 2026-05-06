@@ -6,9 +6,9 @@
 import Foundation
 
 struct AIContext: Codable, Sendable {
-    var intellect: StatBlock
+    var intelligence: StatBlock
     var strength: StatBlock
-    var spirit: StatBlock
+    var vitality: StatBlock
     var discipline: StatBlock
     var activeGoals: [GoalSnapshot]
     var activeQuests: [QuestSnapshot]

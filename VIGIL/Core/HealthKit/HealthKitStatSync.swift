@@ -6,13 +6,13 @@
 import Foundation
 import SwiftData
 
-/// Applies Health-derived XP totals to **`Player.strength`** (workouts + steps) and **`Player.spirit`** (sleep + mindful) on **`MainActor`**, driven by **`HealthKitManager`** reads.
+/// Applies Health-derived XP totals to **`Player.strength`** (workouts + steps) and **`Player.vitality`** (sleep + mindful) on **`MainActor`**, driven by **`HealthKitManager`** reads.
 enum HealthKitStatSync {
     private static let ledgerKey = "vigil.healthKit.dailySyncedTotals.v2"
 
     private struct DayTotals: Codable, Equatable {
         var strength: Int
-        var spirit: Int
+        var vitality: Int
     }
 
     /// Fetches current Health payloads (runs HealthKit completions off the caller until suspension), computes targets, reconciles deltas for **today**, and saves `modelContext` on **`MainActor`**.
@@ -62,10 +62,10 @@ enum HealthKitStatSync {
         spiritTarget: Int
     ) async {
         var ledger = loadLedger()
-        let previous = ledger[dayId] ?? DayTotals(strength: 0, spirit: 0)
+        let previous = ledger[dayId] ?? DayTotals(strength: 0, vitality: 0)
 
         let dStrength = strengthTarget - previous.strength
-        let dSpirit = spiritTarget - previous.spirit
+        let dSpirit = spiritTarget - previous.vitality
 
         if dStrength != 0 {
             var block = player.strength
@@ -77,15 +77,15 @@ enum HealthKitStatSync {
         }
 
         if dSpirit != 0 {
-            var block = player.spirit
+            var block = player.vitality
             block.currentXP = max(0, block.currentXP + dSpirit)
             if dSpirit > 0 {
                 block.totalXP += dSpirit
             }
-            player.spirit = block
+            player.vitality = block
         }
 
-        ledger[dayId] = DayTotals(strength: strengthTarget, spirit: spiritTarget)
+        ledger[dayId] = DayTotals(strength: strengthTarget, vitality: spiritTarget)
         saveLedger(ledger)
 
         try? await modelContext.save()

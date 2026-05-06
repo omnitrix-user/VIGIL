@@ -101,9 +101,9 @@ private extension AIContext {
     static func from(player: Player) -> AIContext {
         let sortedLogs = player.dailyLogs.sorted { $0.date > $1.date }
         return AIContext(
-            intellect: player.intellect,
+            intelligence: player.intelligence,
             strength: player.strength,
-            spirit: player.spirit,
+            vitality: player.vitality,
             discipline: player.discipline,
             activeGoals: player.goals.filter(\.isActive).map {
                 GoalSnapshot(

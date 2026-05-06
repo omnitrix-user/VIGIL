@@ -66,9 +66,9 @@ final class QuestBoardViewModel {
     private func makeAIContext(player: Player) -> AIContext {
         let logs = player.dailyLogs.sorted { $0.date > $1.date }
         return AIContext(
-            intellect: player.intellect,
+            intelligence: player.intelligence,
             strength: player.strength,
-            spirit: player.spirit,
+            vitality: player.vitality,
             discipline: player.discipline,
             activeGoals: player.goals.filter(\.isActive).map {
                 GoalSnapshot(
@@ -111,21 +111,21 @@ final class QuestBoardViewModel {
     private func applyXP(delta: Int, to player: Player, stat: StatCategory) {
         guard delta != 0 else { return }
         switch stat {
-        case .intellect:
-            var block = player.intellect
+        case .intelligence:
+            var block = player.intelligence
             block.currentXP = max(0, block.currentXP + delta)
             if delta > 0 { block.totalXP += delta }
-            player.intellect = block
+            player.intelligence = block
         case .strength:
             var block = player.strength
             block.currentXP = max(0, block.currentXP + delta)
             if delta > 0 { block.totalXP += delta }
             player.strength = block
-        case .spirit:
-            var block = player.spirit
+        case .vitality:
+            var block = player.vitality
             block.currentXP = max(0, block.currentXP + delta)
             if delta > 0 { block.totalXP += delta }
-            player.spirit = block
+            player.vitality = block
         case .discipline:
             var block = player.discipline
             block.currentXP = max(0, block.currentXP + delta)

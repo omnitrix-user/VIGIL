@@ -30,7 +30,7 @@ final class Goal {
     init(
         id: UUID = UUID(),
         name: String = "",
-        category: StatCategory = StatCategory.intellect,
+        category: StatCategory = StatCategory.intelligence,
         goalType: GoalType = GoalType.duration,
         targetValue: Double = 0,
         unit: String = "",

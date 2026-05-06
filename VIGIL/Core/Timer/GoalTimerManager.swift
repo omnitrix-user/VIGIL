@@ -480,21 +480,21 @@ private enum StatXP {
     static func apply(delta: Int, category: StatCategory, to player: Player) {
         guard delta != 0 else { return }
         switch category {
-        case .intellect:
-            var blk = player.intellect
+        case .intelligence:
+            var blk = player.intelligence
             blk.currentXP = max(0, blk.currentXP + delta)
             if delta > 0 { blk.totalXP += delta }
-            player.intellect = blk
+            player.intelligence = blk
         case .strength:
             var blk = player.strength
             blk.currentXP = max(0, blk.currentXP + delta)
             if delta > 0 { blk.totalXP += delta }
             player.strength = blk
-        case .spirit:
-            var blk = player.spirit
+        case .vitality:
+            var blk = player.vitality
             blk.currentXP = max(0, blk.currentXP + delta)
             if delta > 0 { blk.totalXP += delta }
-            player.spirit = blk
+            player.vitality = blk
         case .discipline:
             var blk = player.discipline
             blk.currentXP = max(0, blk.currentXP + delta)

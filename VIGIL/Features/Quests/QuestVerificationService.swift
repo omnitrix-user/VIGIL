@@ -59,9 +59,9 @@ struct QuestVerificationService {
     private func verifyAIQuest(_ quest: Quest, modelContext: ModelContext) async -> Bool {
         guard let player = quest.player else { return false }
         let context = AIContext(
-            intellect: player.intellect,
+            intelligence: player.intelligence,
             strength: player.strength,
-            spirit: player.spirit,
+            vitality: player.vitality,
             discipline: player.discipline,
             activeGoals: [],
             activeQuests: [],
