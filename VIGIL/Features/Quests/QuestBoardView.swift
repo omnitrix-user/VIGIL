@@ -11,11 +11,23 @@ struct QuestBoardView: View {
     @State private var viewModel = QuestBoardViewModel()
     @State private var showCompleted = false
     @State private var showFailed = false
+    @State private var showTour = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg.rawValue) {
+                    HStack {
+                        Spacer()
+                        Button { showTour = true } label: {
+                            Text("[?]")
+                                .font(.vigil.system)
+                                .foregroundStyle(Color.accent.primary)
+                                .padding(Spacing.sm.rawValue)
+                                .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                    }
                     Text("QUEST BOARD")
                         .font(Font.vigil.titleLarge)
                         .foregroundStyle(Color.accent.primary)
@@ -63,6 +75,12 @@ struct QuestBoardView: View {
         .onChange(of: quests.count) {
             viewModel.refresh(quests: quests)
         }
+        .tour(
+            id: .questBoard,
+            content: TourContentRegistry.content(for: .questBoard),
+            forceShow: $showTour,
+            autoShow: true
+        )
     }
 
     private func sectionHeader(_ title: String, count: Int, collapsible: Bool, expanded: Bool) -> some View {

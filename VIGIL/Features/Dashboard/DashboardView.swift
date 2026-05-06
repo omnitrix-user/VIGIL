@@ -9,6 +9,7 @@ import SwiftUI
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Player.createdAt) private var players: [Player]
+    @State private var showTour = false
 
     private var player: Player? {
         players.first
@@ -39,6 +40,26 @@ struct DashboardView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+        .safeAreaInset(edge: .top) {
+            HStack {
+                Spacer()
+                Button { showTour = true } label: {
+                    Text("[?]")
+                        .font(.vigil.system)
+                        .foregroundStyle(Color.accent.primary)
+                        .padding(Spacing.sm.rawValue)
+                        .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, Spacing.md.rawValue)
+            }
+        }
+        .tour(
+            id: .dashboard,
+            content: TourContentRegistry.content(for: .dashboard),
+            forceShow: $showTour,
+            autoShow: true
+        )
     }
 
     private func dashboardContent(player: Player) -> some View {

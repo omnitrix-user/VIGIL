@@ -64,3 +64,12 @@ enum VerificationMethod: String, Codable {
 enum SleepQuality: String, Codable {
     case poor, fair, good, excellent
 }
+
+enum TourID: String, Codable, CaseIterable {
+    case dashboard
+    case questBoard
+    case profile
+    case timer
+    case systemLog
+    case settings
+}

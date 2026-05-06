@@ -8,6 +8,7 @@ import SwiftData
 
 struct ProfileView: View {
     @Query(sort: \Player.createdAt) private var players: [Player]
+    @State private var showTour = false
 
     var body: some View {
         ZStack {
@@ -17,6 +18,17 @@ struct ProfileView: View {
             if let player = players.first {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.md.rawValue) {
+                        HStack {
+                            Spacer()
+                            Button { showTour = true } label: {
+                                Text("[?]")
+                                    .font(.vigil.system)
+                                    .foregroundStyle(Color.accent.primary)
+                                    .padding(Spacing.sm.rawValue)
+                                    .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                        }
                         HStack {
                             Circle().fill(Color.bg.secondary).frame(width: 92, height: 92).overlay(Image(systemName: "person.fill").foregroundStyle(Color.accent.primary))
                             VStack(alignment: .leading) {
@@ -34,5 +46,11 @@ struct ProfileView: View {
                 }
             }
         }
+        .tour(
+            id: .profile,
+            content: TourContentRegistry.content(for: .profile),
+            forceShow: $showTour,
+            autoShow: true
+        )
     }
 }
