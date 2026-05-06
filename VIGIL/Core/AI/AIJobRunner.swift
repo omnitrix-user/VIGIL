@@ -7,6 +7,7 @@ import Foundation
 import Observation
 import SwiftData
 
+@MainActor
 @Observable
 final class AIJobRunner {
     static let shared = AIJobRunner()
@@ -16,7 +17,6 @@ final class AIJobRunner {
     private(set) var isMonitoringVerdictTriggers = false
 
     private let service: VIGILAIService
-    private let worker = AIBackgroundWorker()
     private var morningTimer: Timer?
 
     init(service: VIGILAIService = .shared) {
@@ -45,33 +45,31 @@ final class AIJobRunner {
     }
 
     func runMorningBriefJob(for player: Player) async {
-        await worker.run {
-            let context = AIContext.from(player: player)
-            _ = await self.service.runMorningBrief(context: context)
-            await self.service.retryQueuedJobsIfAvailable()
-        }
+        let context = AIContext.from(player: player)
+        _ = await service.runMorningBrief(context: context)
+        await service.retryQueuedJobsIfAvailable()
         lastMorningBriefAt = Date()
     }
 
     func evaluateVerdictTriggers(player: Player, recentLogs: [DayLog], modelContext: ModelContext) async {
         guard isMonitoringVerdictTriggers else { return }
-        await worker.run {
-            guard Self.shouldTriggerVerdict(player: player, logs: recentLogs) else { return }
-            let context = AIContext.from(player: player)
-            let verdict = await self.service.deliverVerdict(context: context)
-            verdict.player = player
-            modelContext.insert(verdict)
-            try? modelContext.save()
-        }
+        let shouldTrigger = Self.shouldTriggerVerdict(
+            perfectDayStreak: player.perfectDayStreak,
+            recentLogs: recentLogs.map(DayLogSnapshot.init(log:))
+        )
+        guard shouldTrigger else { return }
+
+        let context = AIContext.from(player: player)
+        let verdict = await service.deliverVerdict(context: context)
+        verdict.player = player
+        modelContext.insert(verdict)
+        try? modelContext.save()
     }
 
     func runPatternAnalysisDaily(player: Player, logs: [DayLog]) async -> PatternInsight {
-        let insight = await worker.runAndReturn {
-            let latest30 = Array(logs.sorted { $0.date > $1.date }.prefix(30))
-            let result = await self.service.analysePatterns(logs: latest30)
-            await self.service.retryQueuedJobsIfAvailable()
-            return result
-        }
+        let latest30 = Array(logs.sorted { $0.date > $1.date }.prefix(30))
+        let insight = await service.analysePatterns(logs: latest30)
+        await service.retryQueuedJobsIfAvailable()
         lastPatternAnalysisAt = Date()
         _ = player
         return insight
@@ -88,27 +86,18 @@ final class AIJobRunner {
         return next
     }
 
-    private static func shouldTriggerVerdict(player: Player, logs: [DayLog]) -> Bool {
-        if player.perfectDayStreak > 0, player.perfectDayStreak % 7 == 0 {
+    private static func shouldTriggerVerdict(perfectDayStreak: Int, recentLogs: [DayLogSnapshot]) -> Bool {
+        if perfectDayStreak > 0, perfectDayStreak % 7 == 0 {
             return true
         }
-        let recent = logs.sorted { $0.date > $1.date }.prefix(3)
+        let recent = recentLogs.sorted { $0.date > $1.date }.prefix(3)
         let consecutiveFailures = recent.filter { !$0.isPerfectDay }.count
         return consecutiveFailures >= 3
     }
 }
 
-actor AIBackgroundWorker {
-    func run(_ operation: @escaping @Sendable () async -> Void) async {
-        await operation()
-    }
-
-    func runAndReturn<T: Sendable>(_ operation: @escaping @Sendable () async -> T) async -> T {
-        await operation()
-    }
-}
-
 private extension AIContext {
+    @MainActor
     static func from(player: Player) -> AIContext {
         let sortedLogs = player.dailyLogs.sorted { $0.date > $1.date }
         return AIContext(
@@ -151,6 +140,21 @@ private extension AIContext {
             streak: player.perfectDayStreak,
             rank: player.currentRank,
             titles: player.titles
+        )
+    }
+}
+
+private extension DayLogSnapshot {
+    init(log: DayLog) {
+        self.init(
+            date: log.date,
+            disciplineScore: log.disciplineScore,
+            totalXPEarned: log.totalXPEarned,
+            totalXPLost: log.totalXPLost,
+            isPerfectDay: log.isPerfectDay,
+            didShowUp: log.didShowUp,
+            phoneBlocksScheduled: log.phoneBlocksScheduled,
+            phoneBlocksKept: log.phoneBlocksKept
         )
     }
 }
