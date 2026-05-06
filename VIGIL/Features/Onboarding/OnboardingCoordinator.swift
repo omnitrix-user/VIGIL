@@ -175,7 +175,8 @@ struct OnboardingHostView: View {
             ContractView(goalsText: coordinator.suggestedGoals.filter(\.active).map(\.name)) { hash in
                 coordinator.signatureHash = hash
                 if let player = try? coordinator.complete(modelContext: modelContext) {
-                    Task { await QuestTriggerService.shared.issueImmediateWelcomeQuest(for: player, modelContext: modelContext) }
+                    QuestTriggerService.shared.markOnboardingCompleted()
+                    Task { await QuestTriggerService.shared.evaluateTriggers(modelContext: modelContext) }
                     onComplete()
                 }
             }

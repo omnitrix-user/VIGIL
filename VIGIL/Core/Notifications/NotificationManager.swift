@@ -77,4 +77,39 @@ final class NotificationManager {
         let settings = await center.notificationSettings()
         return settings.authorizationStatus == .authorized
     }
+
+    func postMorningQuestNotification(day: Int, questTitle: String, player: Player?) async {
+        guard await shouldDeliverViolations(player: player) else { return }
+        let body = NotificationContent.Morning.variants.randomElement()?
+            .replacingOccurrences(of: "[N]", with: "\(day)") ?? "Player. New cycle."
+        await post(title: "VIGIL", body: "\(body) [\(questTitle)]")
+    }
+
+    func postIdle18hNotification(player: Player?) async {
+        guard await shouldDeliverViolations(player: player) else { return }
+        await post(title: "VIGIL", body: NotificationContent.Idle18h.variants.randomElement() ?? "Absence logged.")
+    }
+
+    func postIdle48hNotification(player: Player?) async {
+        guard await shouldDeliverViolations(player: player) else { return }
+        await post(title: "VIGIL", body: NotificationContent.Idle48h.variants.randomElement() ?? "Two days lost.")
+    }
+
+    func postIdle7dNotification(player: Player?) async {
+        guard await shouldDeliverViolations(player: player) else { return }
+        await post(title: "VIGIL", body: NotificationContent.Idle7d.variants.randomElement() ?? "Re-entry required.")
+    }
+
+    private func post(title: String, body: String) async {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        let request = UNNotificationRequest(
+            identifier: "vigil.system.\(UUID().uuidString)",
+            content: content,
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 0.05, repeats: false)
+        )
+        try? await center.add(request)
+    }
 }

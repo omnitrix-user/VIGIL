@@ -12,6 +12,7 @@ final class Player {
     var username: String
     var profileImageData: Data?
     var createdAt: Date
+    var lastActiveAt: Date
     var currentRank: Rank
     var totalXP: Int
     var intelligence: StatBlock
@@ -63,6 +64,7 @@ final class Player {
         username: String = "",
         profileImageData: Data? = nil,
         createdAt: Date = Date(),
+        lastActiveAt: Date = Date(),
         currentRank: Rank = Rank.E,
         totalXP: Int = 0,
         perfectDayStreak: Int = 0,
@@ -106,6 +108,7 @@ final class Player {
         self.username = username
         self.profileImageData = profileImageData
         self.createdAt = createdAt
+        self.lastActiveAt = lastActiveAt
         self.currentRank = currentRank
         self.totalXP = totalXP
         self.intelligence = emptyStat

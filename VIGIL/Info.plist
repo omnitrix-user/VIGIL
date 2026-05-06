@@ -15,5 +15,10 @@
 		<string>remote-notification</string>
 		<string>healthkit</string>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.vigil.morning.refresh</string>
+		<string>com.vigil.idle.check</string>
+	</array>
 </dict>
 </plist>

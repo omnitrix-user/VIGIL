@@ -8,10 +8,12 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import BackgroundTasks
 
 @main
 struct VIGILApp: App {
     @State private var appRouter = AppRouter()
+    @Environment(\.scenePhase) private var scenePhase
 
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -41,10 +43,22 @@ struct VIGILApp: App {
         }
     }()
 
+    init() {
+        MorningTriggerScheduler.shared.register()
+        IdleCheckScheduler.shared.register()
+    }
+
     var body: some Scene {
         WindowGroup {
             AppLaunchGate(appRouter: $appRouter)
                 .modelContainer(sharedModelContainer)
+                .onChange(of: scenePhase) { _, phase in
+                    guard phase == .active else { return }
+                    Task { @MainActor in
+                        let context = ModelContext(sharedModelContainer)
+                        await QuestTriggerService.shared.evaluateTriggers(modelContext: context)
+                    }
+                }
         }
     }
 }
@@ -60,6 +74,7 @@ private func wipeSwiftDataStoreFiles() {
 
 private struct AppLaunchGate: View {
     @Binding var appRouter: AppRouter
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \Player.createdAt) private var players: [Player]
     @State private var showOnboarding = false
 
@@ -67,9 +82,16 @@ private struct AppLaunchGate: View {
         MainTabView()
             .environment(appRouter)
             .task {
+                MorningTriggerScheduler.shared.modelContext = modelContext
+                IdleCheckScheduler.shared.modelContext = modelContext
                 showOnboarding = players.isEmpty
                 if !showOnboarding {
                     appRouter.refreshBootTriggerState()
+                    Task { await QuestTriggerService.shared.evaluateTriggers(modelContext: modelContext) }
+                    if let player = players.first {
+                        MorningTriggerScheduler.shared.schedule(for: player)
+                    }
+                    IdleCheckScheduler.shared.schedule()
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
@@ -77,6 +99,7 @@ private struct AppLaunchGate: View {
                     showOnboarding = true
                 } else {
                     appRouter.refreshBootTriggerState()
+                    Task { await QuestTriggerService.shared.evaluateTriggers(modelContext: modelContext) }
                 }
             }
             .fullScreenCover(isPresented: $showOnboarding) {
