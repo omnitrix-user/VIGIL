@@ -111,27 +111,27 @@ final class OnboardingCoordinator {
         weaknessCascade.start(with: sortedSelectedWeaknesses)
     }
 
-    func canContinueWeaknessCascade() -> Bool {
-        guard let current = weaknessCascade.inProgress else { return false }
-        if current.source.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return false }
-        if current.verdict == .limit, (current.capValue ?? 0) <= 0 { return false }
-        return true
+    func canAdvanceCurrentPhase() -> Bool {
+        guard let inProgress = weaknessCascade.inProgress else { return false }
+        switch weaknessCascade.phase {
+        case .source:
+            return !inProgress.source
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .isEmpty
+        case .frequency, .duration, .verdict, .cap:
+            return true
+        }
     }
 
-    func continueWeaknessCascade() -> Bool {
-        guard canContinueWeaknessCascade() else { return false }
-        let completedAll = weaknessAdvance()
-        if completedAll {
+    func advanceWeaknessCascade() -> Bool {
+        var updated = weaknessCascade
+        let isComplete = updated.advance()
+        weaknessCascade = updated
+
+        if isComplete {
             declaredDistractions = weaknessCascade.completed
         }
-        return completedAll
-    }
-
-    private func weaknessAdvance() -> Bool {
-        var updated = weaknessCascade
-        let done = updated.advance()
-        weaknessCascade = updated
-        return done
+        return isComplete
     }
 
     func goToPreviousWeaknessStep() {
@@ -286,9 +286,7 @@ struct OnboardingHostView: View {
             InterrogationView(coordinator: coordinator) { coordinator.advance() }
         case .weaknessCascade:
             GoalSetupView(coordinator: coordinator) {
-                if coordinator.continueWeaknessCascade() {
-                    coordinator.advance()
-                }
+                coordinator.advance()
             }
         case .profileFragmentOne, .profileFragmentTwo, .profileFragmentThree, .profileFragmentFour:
             FragmentView(step: coordinator.step) { coordinator.advance() }

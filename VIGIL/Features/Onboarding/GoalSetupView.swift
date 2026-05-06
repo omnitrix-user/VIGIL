@@ -72,13 +72,18 @@ struct GoalSetupView: View {
                         coordinator.goToPreviousWeaknessStep()
                     }
                 }
-                VIGILButton(title: coordinator.weaknessCascade.currentIndex == coordinator.weaknessCascade.weaknesses.count - 1 && coordinator.weaknessCascade.phase == .cap ? "FINALIZE WEAKNESS DECLARATIONS" : "CONTINUE") {
-                    guard coordinator.canContinueWeaknessCascade() else {
-                        validationMessage = "[SYSTEM REQUIRES COMPLETION OF CURRENT WEAKNESS DECLARATION]"
+                VIGILButton(title: continueButtonTitle) {
+                    guard coordinator.canAdvanceCurrentPhase() else {
+                        validationMessage = phaseValidationMessage
                         return
                     }
+
                     validationMessage = ""
-                    onContinue()
+
+                    let cascadeComplete = coordinator.advanceWeaknessCascade()
+                    if cascadeComplete {
+                        onContinue()
+                    }
                 }
             }
         }
@@ -119,5 +124,24 @@ struct GoalSetupView: View {
             get: { coordinator.weaknessCascade.inProgress?.capValue ?? 60 },
             set: { value in coordinator.updateCurrentWeakness { $0.capValue = value } }
         )
+    }
+
+    private var continueButtonTitle: String {
+        let cascade = coordinator.weaknessCascade
+        let isLastWeakness = cascade.currentIndex == cascade.weaknesses.count - 1
+        let isFinalPhase = cascade.phase == .cap ||
+            (cascade.phase == .verdict && cascade.inProgress?.verdict != .limit)
+        return (isLastWeakness && isFinalPhase)
+            ? "FINALIZE WEAKNESS DECLARATIONS"
+            : "CONTINUE"
+    }
+
+    private var phaseValidationMessage: String {
+        switch coordinator.weaknessCascade.phase {
+        case .source:
+            return "[SYSTEM REQUIRES SOURCE IDENTIFICATION]"
+        default:
+            return "[SYSTEM REQUIRES COMPLETION OF CURRENT PHASE]"
+        }
     }
 }
