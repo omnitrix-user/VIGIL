@@ -36,27 +36,51 @@ struct VIGILApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
-                .environment(appRouter)
+            AppLaunchGate(appRouter: $appRouter)
                 .modelContainer(sharedModelContainer)
-                .task {
-                    appRouter.refreshBootTriggerState()
-                }
-                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                    appRouter.refreshBootTriggerState()
-                }
-                .fullScreenCover(isPresented: bootCoverBinding) {
-                    BootSequenceView {
-                        appRouter.completeBootSequence()
-                    }
-                    .interactiveDismissDisabled()
-                }
         }
+    }
+}
+
+private struct AppLaunchGate: View {
+    @Binding var appRouter: AppRouter
+    @Query(sort: \Player.createdAt) private var players: [Player]
+    @State private var showOnboarding = false
+
+    var body: some View {
+        MainTabView()
+            .environment(appRouter)
+            .task {
+                showOnboarding = players.isEmpty
+                if !showOnboarding {
+                    appRouter.refreshBootTriggerState()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                if players.isEmpty {
+                    showOnboarding = true
+                } else {
+                    appRouter.refreshBootTriggerState()
+                }
+            }
+            .fullScreenCover(isPresented: $showOnboarding) {
+                OnboardingHostView {
+                    showOnboarding = false
+                    appRouter.refreshBootTriggerState()
+                }
+                .interactiveDismissDisabled()
+            }
+            .fullScreenCover(isPresented: bootCoverBinding) {
+                BootSequenceView {
+                    appRouter.completeBootSequence()
+                }
+                .interactiveDismissDisabled()
+            }
     }
 
     private var bootCoverBinding: Binding<Bool> {
         Binding(
-            get: { appRouter.shouldShowBoot },
+            get: { !showOnboarding && appRouter.shouldShowBoot },
             set: { appRouter.shouldShowBoot = $0 }
         )
     }
