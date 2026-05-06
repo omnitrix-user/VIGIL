@@ -9,7 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("VIGIL")
+        ZStack {
+            Color.bg.primary
+                .ignoresSafeArea()
+
+            Text("VIGIL")
+                .font(Font.vigil.titleLarge)
+                .foregroundStyle(Color.accent.primary)
+        }
     }
 }
 
