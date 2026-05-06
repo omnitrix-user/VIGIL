@@ -1,0 +1,44 @@
+{
+  "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/ContentView.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ContentView.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ContentView.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Quests/QuestCardView.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestCardView.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestCardView.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestCardView.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestCardView.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestCardView.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Quests/QuestDetailView.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestDetailView.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestDetailView.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestDetailView.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestDetailView.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestDetailView.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Quests/QuestVerificationService.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestVerificationService.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestVerificationService.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestVerificationService.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestVerificationService.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/QuestVerificationService.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Widgets/LiveActivity/TimerLiveActivity.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TimerLiveActivity.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TimerLiveActivity.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TimerLiveActivity.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TimerLiveActivity.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TimerLiveActivity.swiftdeps"
+  }
+}
