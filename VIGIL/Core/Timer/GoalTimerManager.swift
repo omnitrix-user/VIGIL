@@ -9,14 +9,6 @@ import Foundation
 import Observation
 import SwiftData
 
-struct CompletedSession: Sendable {
-    let goalId: UUID
-    let durationMinutes: Double
-    let valueLogged: Double
-    let xpAwarded: Int
-    let wasCompleted: Bool
-}
-
 @Observable
 @MainActor
 final class GoalTimerManager {
