@@ -13,7 +13,6 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/AI/AIJobRunner.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/AI/AIModels.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/AI/PromptEngine.swift
-/Users/qualtech/Desktop/VIGIL/VIGIL/Core/AI/QuestTriggerService.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/AI/VIGILAIService.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Components/BracketedText.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Components/GlitchModifier.swift
@@ -25,6 +24,12 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Colors.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Spacing.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Typography.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/Submitters/EmailFeedbackSubmitter.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/Submitters/PostHogFeedbackSubmitter.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/Submitters/SentryFeedbackSubmitter.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/DiagnosticsBundle.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/FeedbackService.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/FeedbackSubmitting.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/HealthKitAdapter.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/HealthKitManager.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/HealthKitStatSync.swift
@@ -32,6 +37,12 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/WorkoutSummary.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/Notifications/NotificationContent.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/Notifications/NotificationManager.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Quests/Triggers/IdleCheckScheduler.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Quests/Triggers/IdleTriggerService.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Quests/Triggers/MorningTriggerScheduler.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Quests/Triggers/WelcomeTrigger.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Quests/QuestTriggerService.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Reset/ResetService.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/ScreenTime/BlockScheduler.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/ScreenTime/PhoneBlock.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/ScreenTime/ScreenTimeAppGroupBridge.swift
@@ -40,12 +51,14 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/String+SystemID.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/AIVerdict.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/DayLog.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/FeedbackEntry.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/Goal.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/GoalCompletion.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/PhoneBlockRecord.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/Player.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/Quest.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/StatBlock.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/TourState.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/VIGILEnums.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Activity/ActivityReviewView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Boot/BootSequenceView.swift
@@ -55,6 +68,8 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Dashboard/RankCardView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Dashboard/StatBarsView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Dashboard/TodayGoalsView.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Feedback/FeedbackHistoryView.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Feedback/FeedbackView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Onboarding/ContractView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Onboarding/GoalSetupView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Onboarding/InterrogationView.swift
@@ -70,6 +85,9 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Quests/QuestCardView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Quests/QuestDetailView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Quests/QuestVerificationService.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Tour/TourContent.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Tour/TourCoordinator.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Tour/TourOverlayView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Widgets/LiveActivity/TimerLiveActivity.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/ContentView.swift
 /Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/DerivedSources/GeneratedAssetSymbols.swift

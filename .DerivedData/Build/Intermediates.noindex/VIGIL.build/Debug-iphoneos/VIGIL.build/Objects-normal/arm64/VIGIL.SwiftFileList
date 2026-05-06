@@ -24,6 +24,12 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Colors.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Spacing.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Typography.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/Submitters/EmailFeedbackSubmitter.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/Submitters/PostHogFeedbackSubmitter.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/Submitters/SentryFeedbackSubmitter.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/DiagnosticsBundle.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/FeedbackService.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Core/Feedback/FeedbackSubmitting.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/HealthKitAdapter.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/HealthKitManager.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/HealthKit/HealthKitStatSync.swift
@@ -45,6 +51,7 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Core/String+SystemID.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/AIVerdict.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/DayLog.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/FeedbackEntry.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/Goal.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/GoalCompletion.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/PhoneBlockRecord.swift
@@ -61,6 +68,8 @@
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Dashboard/RankCardView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Dashboard/StatBarsView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Dashboard/TodayGoalsView.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Feedback/FeedbackHistoryView.swift
+/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Feedback/FeedbackView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Onboarding/ContractView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Onboarding/GoalSetupView.swift
 /Users/qualtech/Desktop/VIGIL/VIGIL/Features/Onboarding/InterrogationView.swift
