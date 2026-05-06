@@ -55,7 +55,7 @@ enum ScreenTimeAppGroupBridge {
 
         CFNotificationCenterPostNotification(
             CFNotificationCenterGetDarwinNotifyCenter(),
-            darwinNotifyName,
+            CFNotificationName(darwinNotifyName as CFString),
             nil,
             nil,
             true
