@@ -1,0 +1,16 @@
+{
+  "source": "/Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Components/BracketedText.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "[%@]",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 9
+        }
+      }
+    ]
+  },
+  "version": 1
+}
