@@ -8,6 +8,7 @@ import SwiftUI
 struct InterrogationView: View {
     @Bindable var coordinator: OnboardingCoordinator
     let onContinue: () -> Void
+    @State private var validationMessage = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.lg.rawValue) {
@@ -39,34 +40,39 @@ struct InterrogationView: View {
                 Text("IDENTIFY YOUR WEAKNESSES")
                     .font(.vigil.system)
                     .foregroundStyle(Color.text.secondary)
-                ForEach(["Procrastination", "Distraction", "Laziness", "Anxiety", "Poor Sleep", "Addiction", "Lack Of Focus", "Other"], id: \.self) { item in
+                ForEach(Weakness.allCases, id: \.self) { weakness in
                     Button {
-                        if coordinator.selectedWeaknesses.contains(item) {
-                            coordinator.selectedWeaknesses.remove(item)
-                        } else {
-                            coordinator.selectedWeaknesses.insert(item)
-                        }
+                        coordinator.toggleWeakness(weakness)
+                        validationMessage = ""
                     } label: {
-                        Text("[\(item.uppercased())]")
+                        Text("\(coordinator.selectedWeaknesses.contains(weakness) ? "[X]" : "[ ]") \(weakness.rawValue.uppercased())")
                             .font(.vigil.caption)
-                            .foregroundStyle(coordinator.selectedWeaknesses.contains(item) ? Color.bg.primary : Color.text.secondary)
+                            .foregroundStyle(coordinator.selectedWeaknesses.contains(weakness) ? Color.bg.primary : Color.text.secondary)
                             .padding(.horizontal, Spacing.sm.rawValue)
                             .padding(.vertical, Spacing.xs.rawValue)
-                            .background(coordinator.selectedWeaknesses.contains(item) ? Color.accent.primary : Color.bg.tertiary)
+                            .background(coordinator.selectedWeaknesses.contains(weakness) ? Color.accent.primary : Color.bg.tertiary)
                             .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
                     }
                     .buttonStyle(.plain)
                 }
             }
+            if !validationMessage.isEmpty {
+                Text(validationMessage)
+                    .font(.vigil.system)
+                    .foregroundStyle(Color.status.warning)
+            }
 
             Spacer()
-            VIGILButton(title: "CONTINUE", isDisabled: !isValid, action: onContinue)
+            VIGILButton(title: "CONTINUE", isDisabled: coordinator.username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) {
+                guard !coordinator.selectedWeaknesses.isEmpty else {
+                    validationMessage = "[SYSTEM REQUIRES MINIMUM ONE WEAKNESS DECLARED]"
+                    return
+                }
+                coordinator.beginWeaknessCascade()
+                onContinue()
+            }
         }
         .padding(Spacing.md.rawValue)
         .background(Color.bg.primary.ignoresSafeArea())
-    }
-
-    private var isValid: Bool {
-        !coordinator.username.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !coordinator.selectedWeaknesses.isEmpty
     }
 }

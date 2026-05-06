@@ -8,6 +8,31 @@ import Observation
 import SwiftData
 import SwiftUI
 
+enum Weakness: String, CaseIterable, Codable, Hashable {
+    case procrastination = "Procrastination"
+    case distraction = "Distraction"
+    case laziness = "Laziness"
+    case anxiety = "Anxiety"
+    case poorSleep = "Poor Sleep"
+    case addiction = "Addiction"
+    case lackOfFocus = "Lack Of Focus"
+    case other = "Other"
+}
+
+struct WeaknessCascadeDraft: Codable, Hashable {
+    var source: String = ""
+    var frequency: String = "Daily"
+    var duration: Double = 60
+    var verdict: VerdictOption = .trackOnly
+    var cap: Double = 60
+}
+
+struct OnboardingStatePayload: Codable {
+    var step: OnboardingStep
+    var selectedWeaknesses: [Weakness]
+    var weaknessCascade: WeaknessCascadeCoordinator
+}
+
 struct SuggestedGoal: Identifiable, Codable {
     var id: UUID = UUID()
     var name: String
@@ -31,12 +56,9 @@ final class OnboardingCoordinator {
     var age = 21
     var designationType = "Prefer Not To Disclose"
     var lifeStatus = "Student"
-    var selectedWeaknesses: Set<String> = []
-    var weaknessSource = ""
-    var weaknessFrequency = "Daily"
-    var weaknessDuration = 60.0
-    var weaknessVerdict: VerdictOption = .trackOnly
-    var weaknessCap = 60.0
+    var selectedWeaknesses: Set<Weakness> = []
+    var weaknessCascade = WeaknessCascadeCoordinator()
+    var declaredDistractions: [DeclaredDistraction] = []
 
     var fieldOfFocus = ""
     var specificObjective = ""
@@ -75,6 +97,84 @@ final class OnboardingCoordinator {
         abandonWarning = true
     }
 
+    var sortedSelectedWeaknesses: [Weakness] { Weakness.allCases.filter { selectedWeaknesses.contains($0) } }
+
+    func toggleWeakness(_ weakness: Weakness) {
+        if selectedWeaknesses.contains(weakness) {
+            selectedWeaknesses.remove(weakness)
+        } else {
+            selectedWeaknesses.insert(weakness)
+        }
+    }
+
+    func beginWeaknessCascade() {
+        weaknessCascade.start(with: sortedSelectedWeaknesses)
+    }
+
+    func canContinueWeaknessCascade() -> Bool {
+        guard let current = weaknessCascade.inProgress else { return false }
+        if current.source.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return false }
+        if current.verdict == .limit, (current.capValue ?? 0) <= 0 { return false }
+        return true
+    }
+
+    func continueWeaknessCascade() -> Bool {
+        guard canContinueWeaknessCascade() else { return false }
+        let completedAll = weaknessAdvance()
+        if completedAll {
+            declaredDistractions = weaknessCascade.completed
+        }
+        return completedAll
+    }
+
+    private func weaknessAdvance() -> Bool {
+        var updated = weaknessCascade
+        let done = updated.advance()
+        weaknessCascade = updated
+        return done
+    }
+
+    func goToPreviousWeaknessStep() {
+        var updated = weaknessCascade
+        updated.back()
+        weaknessCascade = updated
+    }
+
+    func updateCurrentWeakness(_ mutate: (inout PartialDeclaredDistraction) -> Void) {
+        guard var current = weaknessCascade.inProgress else { return }
+        mutate(&current)
+        var updated = weaknessCascade
+        updated.update(current)
+        weaknessCascade = updated
+    }
+
+    func restore(from payload: OnboardingStatePayload) {
+        step = payload.step
+        selectedWeaknesses = Set(payload.selectedWeaknesses)
+        weaknessCascade = payload.weaknessCascade
+        declaredDistractions = payload.weaknessCascade.completed
+    }
+
+    func payload() -> OnboardingStatePayload {
+        OnboardingStatePayload(
+            step: step,
+            selectedWeaknesses: Array(selectedWeaknesses),
+            weaknessCascade: weaknessCascade
+        )
+    }
+
+    func encodePayload() -> String {
+        guard let data = try? JSONEncoder().encode(payload()),
+              let raw = String(data: data, encoding: .utf8) else { return "{}" }
+        return raw
+    }
+
+    func decodePayload(_ raw: String) {
+        guard let data = raw.data(using: .utf8),
+              let payload = try? JSONDecoder().decode(OnboardingStatePayload.self, from: data) else { return }
+        restore(from: payload)
+    }
+
     func complete(modelContext: ModelContext) throws -> Player {
         let player = Player(
             username: username.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -91,7 +191,8 @@ final class OnboardingCoordinator {
             notificationsViolations: true,
             notificationsMorningBrief: true,
             isLightModeEnabled: false,
-            friendCode: Self.generateFriendCode()
+            friendCode: Self.generateFriendCode(),
+            declaredDistractions: declaredDistractions
         )
         for g in suggestedGoals where g.active {
             let goal = Goal(name: g.name, category: g.category, goalType: g.goalType, targetValue: g.targetValue, unit: g.unit, isCapGoal: g.isCapGoal, xpPerUnit: 2, xpPenaltyPerUnit: g.isCapGoal ? 2 : 0, isActive: true, colorHex: "#6C63FF", icon: "scope", startDate: Date(), player: player)
@@ -110,9 +211,9 @@ final class OnboardingCoordinator {
             SuggestedGoal(name: "TRAINING", category: .strength, goalType: .count, targetValue: max(1, targetTrainingFrequency), unit: "sessions", isCapGoal: false),
             SuggestedGoal(name: "SLEEP CONSISTENCY", category: .vitality, goalType: .boolean, targetValue: 1, unit: "complete", isCapGoal: false),
         ]
-        if weaknessVerdict == .limit {
+        if declaredDistractions.contains(where: { $0.verdict == .limit }) {
             suggestedGoals.append(
-                SuggestedGoal(name: "DISTRACTION CAP", category: .discipline, goalType: .duration, targetValue: weaknessCap, unit: "minutes", isCapGoal: true)
+                SuggestedGoal(name: "DISTRACTION CAP", category: .discipline, goalType: .duration, targetValue: declaredDistractions.first(where: { $0.verdict == .limit })?.capValue ?? 60, unit: "minutes", isCapGoal: true)
             )
         }
     }
@@ -148,6 +249,32 @@ struct OnboardingHostView: View {
         }
         .preferredColorScheme(.dark)
         .onDisappear { coordinator.registerAbandonAttempt() }
+        .task {
+            if let existing = progressRows.first {
+                coordinator.decodePayload(existing.payloadJSON)
+            } else {
+                let row = OnboardingProgress()
+                modelContext.insert(row)
+                try? modelContext.save()
+            }
+        }
+        .onChange(of: coordinator.step) { _, _ in persistProgress() }
+        .onChange(of: coordinator.selectedWeaknesses) { _, _ in persistProgress() }
+        .onChange(of: coordinator.weaknessCascade.currentIndex) { _, _ in persistProgress() }
+        .onChange(of: coordinator.weaknessCascade.phase) { _, _ in persistProgress() }
+        .onChange(of: coordinator.weaknessCascade.inProgress) { _, _ in persistProgress() }
+        .onDisappear { persistProgress() }
+    }
+
+    private func persistProgress() {
+        let row = progressRows.first ?? OnboardingProgress()
+        if progressRows.isEmpty { modelContext.insert(row) }
+        row.currentStep = coordinator.step.rawValue
+        row.currentQueryIndex = coordinator.queryIndex
+        row.totalQueries = coordinator.totalQueries
+        row.payloadJSON = coordinator.encodePayload()
+        row.updatedAt = Date()
+        try? modelContext.save()
     }
 
     @ViewBuilder
@@ -158,7 +285,11 @@ struct OnboardingHostView: View {
         case .identity:
             InterrogationView(coordinator: coordinator) { coordinator.advance() }
         case .weaknessCascade:
-            GoalSetupView(coordinator: coordinator) { coordinator.advance() }
+            GoalSetupView(coordinator: coordinator) {
+                if coordinator.continueWeaknessCascade() {
+                    coordinator.advance()
+                }
+            }
         case .profileFragmentOne, .profileFragmentTwo, .profileFragmentThree, .profileFragmentFour:
             FragmentView(step: coordinator.step) { coordinator.advance() }
         case .intelligence:

@@ -87,9 +87,18 @@ final class ActivityCategorizationService {
         let declaredGoals = player.goals.filter(\.isActive).map {
             DeclaredGoal(name: $0.name, category: $0.category, targetValue: $0.targetValue)
         }
-        let declaredDistractions = player.goals.filter { $0.isCapGoal || $0.category == .discipline }.map {
-            DeclaredDistraction(name: $0.name, frequency: "Daily", verdict: .limit, capValue: $0.isCapGoal ? $0.targetValue : nil)
-        }
+        let declaredDistractions = !player.declaredDistractions.isEmpty
+            ? player.declaredDistractions
+            : player.goals.filter { $0.isCapGoal || $0.category == .discipline }.map {
+                DeclaredDistraction(
+                    name: $0.name,
+                    source: $0.name,
+                    frequency: "Daily",
+                    durationMinutes: $0.targetValue,
+                    verdict: .limit,
+                    capValue: $0.isCapGoal ? $0.targetValue : nil
+                )
+            }
         return PlayerCategorizationContext(
             declaredDistractions: declaredDistractions,
             declaredGoals: declaredGoals,

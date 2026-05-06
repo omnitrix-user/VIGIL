@@ -8,7 +8,7 @@ struct FeedbackView: View {
     @State private var mode = 0 // 0 structured, 1 raw
     @State private var kind: FeedbackKind = .bug
     @State private var title = ""
-    @State private var body = ""
+    @State private var bodyText = ""
     @State private var severity = 3.0
     @State private var includeDiagnostics = true
     @State private var lastAIOutput = ""
@@ -36,7 +36,7 @@ struct FeedbackView: View {
                     .background(Color.bg.secondary)
                     .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
 
-                TextField("DESCRIPTION", text: $body, axis: .vertical)
+                TextField("DESCRIPTION", text: $bodyText, axis: .vertical)
                     .lineLimit(6...12)
                     .padding()
                     .background(Color.bg.secondary)
@@ -60,7 +60,7 @@ struct FeedbackView: View {
                 Toggle("[INCLUDE SYSTEM DIAGNOSTICS]", isOn: $includeDiagnostics)
                     .font(.vigil.caption)
             } else {
-                TextField("Send signal to architect...", text: $body, axis: .vertical)
+                TextField("Send signal to architect...", text: $bodyText, axis: .vertical)
                     .lineLimit(8...14)
                     .padding()
                     .background(Color.bg.secondary)
@@ -82,7 +82,7 @@ struct FeedbackView: View {
 
     @MainActor
     private func submit() async {
-        guard !body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard !bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             confirmationMessage = "The system received nothing. Try again."
             return
         }
@@ -90,7 +90,7 @@ struct FeedbackView: View {
         let entry = FeedbackEntry(
             kind: effectiveKind,
             title: mode == 1 ? nil : title,
-            body: body,
+            body: bodyText,
             severity: effectiveKind == .bug ? Int(severity) : nil,
             lastAIOutput: effectiveKind == .aiIssue ? lastAIOutput : nil,
             includeDiagnostics: mode == 1 ? false : includeDiagnostics
@@ -99,7 +99,7 @@ struct FeedbackView: View {
             try await FeedbackService.shared.submit(entry, modelContext: modelContext)
             confirmationMessage = "Signal received. The architect has been notified."
             title = ""
-            body = ""
+            bodyText = ""
         } catch EmailFeedbackSubmitterError.mailUnavailable {
             confirmationMessage = """
 [REPORT QUEUED]

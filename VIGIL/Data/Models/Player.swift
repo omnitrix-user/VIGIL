@@ -46,6 +46,7 @@ final class Player {
     var hasUnawokenTag: Bool
     var friendCode: String
     var supabaseUserId: String?
+    var declaredDistractions: [DeclaredDistraction]
 
     @Relationship(deleteRule: .cascade, inverse: \Goal.player)
     var goals: [Goal]
@@ -93,7 +94,8 @@ final class Player {
         awakeningQuestCompleted: Bool = false,
         hasUnawokenTag: Bool = false,
         friendCode: String = "",
-        supabaseUserId: String? = nil
+        supabaseUserId: String? = nil,
+        declaredDistractions: [DeclaredDistraction] = []
     ) {
         let emptyStat = StatBlock(
             currentXP: 0,
@@ -142,6 +144,7 @@ final class Player {
         self.hasUnawokenTag = hasUnawokenTag
         self.friendCode = friendCode
         self.supabaseUserId = supabaseUserId
+        self.declaredDistractions = declaredDistractions
         self.goals = []
         self.quests = []
         self.dailyLogs = []
