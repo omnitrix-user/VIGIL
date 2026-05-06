@@ -6,6 +6,13 @@
     "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Animations.o",
     "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Animations.swiftdeps"
   },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Colors.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Colors.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Colors.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Colors.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Colors.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Colors.swiftdeps"
+  },
   "/Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Components/BracketedText.swift" : {
     "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/BracketedText.swiftconstvalues",
     "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/BracketedText.d",

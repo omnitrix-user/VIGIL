@@ -1,25 +1,4 @@
 {
-  "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/AIVerdict.swift" : {
-    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/AIVerdict.swiftconstvalues",
-    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/AIVerdict.d",
-    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/AIVerdict.dia",
-    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/AIVerdict.o",
-    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/AIVerdict.swiftdeps"
-  },
-  "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/DayLog.swift" : {
-    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/DayLog.swiftconstvalues",
-    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/DayLog.d",
-    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/DayLog.dia",
-    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/DayLog.o",
-    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/DayLog.swiftdeps"
-  },
-  "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/Goal.swift" : {
-    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Goal.swiftconstvalues",
-    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Goal.d",
-    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Goal.dia",
-    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Goal.o",
-    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Goal.swiftdeps"
-  },
   "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/GoalCompletion.swift" : {
     "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GoalCompletion.swiftconstvalues",
     "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/GoalCompletion.d",
@@ -47,5 +26,33 @@
     "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Quest.dia",
     "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Quest.o",
     "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/Quest.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/StatBlock.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/StatBlock.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/StatBlock.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/StatBlock.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/StatBlock.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/StatBlock.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/TourState.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TourState.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TourState.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TourState.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TourState.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/TourState.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Data/Models/VIGILEnums.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/VIGILEnums.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/VIGILEnums.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/VIGILEnums.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/VIGILEnums.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/VIGILEnums.swiftdeps"
+  },
+  "/Users/qualtech/Desktop/VIGIL/VIGIL/Features/Activity/ActivityReviewView.swift" : {
+    "const-values" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ActivityReviewView.swiftconstvalues",
+    "dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ActivityReviewView.d",
+    "diagnostics" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ActivityReviewView.dia",
+    "object" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ActivityReviewView.o",
+    "swift-dependencies" : "/Users/qualtech/Desktop/VIGIL/.DerivedData/Build/Intermediates.noindex/VIGIL.build/Debug-iphoneos/VIGIL.build/Objects-normal/arm64/ActivityReviewView.swiftdeps"
   }
 }

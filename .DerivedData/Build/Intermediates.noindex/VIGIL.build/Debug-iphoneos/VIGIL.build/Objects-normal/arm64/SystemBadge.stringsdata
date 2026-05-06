@@ -1,0 +1,16 @@
+{
+  "source": "/Users/qualtech/Desktop/VIGIL/VIGIL/Core/DesignSystem/Components/SystemBadge.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "[%@]",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 8
+        }
+      }
+    ]
+  },
+  "version": 1
+}
