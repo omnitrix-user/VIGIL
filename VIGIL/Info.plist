@@ -20,5 +20,7 @@
 		<string>com.vigil.morning.refresh</string>
 		<string>com.vigil.idle.check</string>
 	</array>
+	<key>ARCHITECT_EMAIL</key>
+	<string>architect@vigil.app</string>
 </dict>
 </plist>

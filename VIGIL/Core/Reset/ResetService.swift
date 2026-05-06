@@ -12,4 +12,10 @@ final class ResetService {
         rows.forEach { modelContext.delete($0) }
         try? modelContext.save()
     }
+
+    func clearFeedback(modelContext: ModelContext) {
+        let rows = (try? modelContext.fetch(FetchDescriptor<FeedbackEntry>())) ?? []
+        rows.forEach { modelContext.delete($0) }
+        try? modelContext.save()
+    }
 }

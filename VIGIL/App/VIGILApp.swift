@@ -25,6 +25,7 @@ struct VIGILApp: App {
             AIVerdict.self,
             PhoneBlockRecord.self,
             TourState.self,
+            FeedbackEntry.self,
         ])
         // CloudKit: when enabling sync, configure ModelConfiguration with CloudKit
         // (e.g. `cloudKitDatabase: .private("iCloud.<your-container>)")`) and migrate.

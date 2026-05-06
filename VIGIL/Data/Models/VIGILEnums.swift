@@ -73,3 +73,11 @@ enum TourID: String, Codable, CaseIterable {
     case systemLog
     case settings
 }
+
+enum FeedbackKind: String, Codable, CaseIterable {
+    case bug
+    case featureRequest
+    case aiIssue
+    case insight
+    case rant
+}
