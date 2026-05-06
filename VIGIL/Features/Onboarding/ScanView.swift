@@ -19,9 +19,16 @@ struct ScanView: View {
                 .multilineTextAlignment(.center)
 
             VStack(alignment: .leading, spacing: Spacing.sm.rawValue) {
-                ProgressView(value: progress)
-                    .tint(Color.accent.primary)
-                Text("System scan in progress")
+                Rectangle()
+                    .fill(Color.bg.tertiary)
+                    .frame(height: 8)
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .fill(Color.accent.primary)
+                            .frame(width: max(8, progress * 260), height: 8)
+                    }
+                    .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
+                Text("[SYSTEM SCAN IN PROGRESS]")
                     .font(Font.vigil.system)
                     .foregroundStyle(Color.text.secondary)
             }

@@ -15,11 +15,21 @@ final class AppRouter {
         case profile
     }
 
+    enum BootContext {
+        case standard
+        case postOnboarding
+        case newDay
+        case postPunishment
+        case streakMilestone
+        case rankChange
+    }
+
     private enum DefaultsKey {
         static let lastBootSequenceDay = "vigil.lastBootSequenceDay"
     }
 
     var shouldShowBoot: Bool = false
+    var bootContext: BootContext = .standard
     var activeTab: Tab = .dashboard
     var hasNewQuest: Bool = false
 
@@ -29,6 +39,7 @@ final class AppRouter {
         let lastId = UserDefaults.standard.string(forKey: DefaultsKey.lastBootSequenceDay)
         let isFirstOpenToday = lastId != todayId
         shouldShowBoot = isFirstOpenToday || hasNewQuest
+        bootContext = isFirstOpenToday ? .newDay : .standard
     }
 
     /// Call when the boot sequence finishes (timer or future skip control).
@@ -42,6 +53,7 @@ final class AppRouter {
     /// Call when a new quest is issued while the app may be backgrounded or active.
     func setHasNewQuest(_ value: Bool) {
         hasNewQuest = value
+        if value { bootContext = .rankChange }
         refreshBootTriggerState()
     }
 

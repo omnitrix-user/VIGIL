@@ -4,12 +4,14 @@
 //
 
 import CryptoKit
+import PencilKit
 import SwiftUI
 
 struct ContractView: View {
+    let goalsText: [String]
     let onSigned: (String) -> Void
 
-    @State private var points: [CGPoint] = []
+    @State private var drawing = PKDrawing()
     @State private var animateOut = false
 
     var body: some View {
@@ -25,10 +27,10 @@ struct ContractView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            SignatureCanvas(points: $points)
+            SignatureCanvas(drawing: $drawing)
                 .frame(height: 160)
                 .background(Color.bg.secondary)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
 
             Button(action: sign) {
                 Text("SIGN")
@@ -36,11 +38,11 @@ struct ContractView: View {
                     .foregroundStyle(Color.bg.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, Spacing.md.rawValue)
-                    .background(points.isEmpty ? Color.bg.tertiary : Color.accent.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .background(drawing.bounds.isEmpty ? Color.bg.tertiary : Color.accent.primary)
+                    .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
             }
             .buttonStyle(.plain)
-            .disabled(points.isEmpty)
+            .disabled(drawing.bounds.isEmpty)
         }
         .padding(Spacing.md.rawValue)
         .background(Color.bg.primary.ignoresSafeArea())
@@ -51,18 +53,15 @@ struct ContractView: View {
 
     private var contractBody: String {
         """
-You accept consequence for compliance failure.
-You accept permanent record of violations.
-You will not manipulate or falsify system logs.
-You accept that the system does not negotiate.
-No mercy protocol remains active at all times.
-The system never sleeps.
+YOU HAVE COMMITTED TO \(goalsText.joined(separator: ", ")).
+THE SYSTEM WILL HOLD YOU TO THIS.
+YOU ACCEPT CONSEQUENCE FOR COMPLIANCE FAILURE.
+THE SYSTEM DOES NOT NEGOTIATE.
 """
     }
 
     private func sign() {
-        let serial = points.map { "\($0.x),\($0.y)" }.joined(separator: "|")
-        let digest = SHA256.hash(data: Data(serial.utf8))
+        let digest = SHA256.hash(data: drawing.dataRepresentation())
         let hash = digest.map { String(format: "%02x", $0) }.joined()
         animateOut = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
@@ -72,27 +71,42 @@ The system never sleeps.
 }
 
 private struct SignatureCanvas: View {
-    @Binding var points: [CGPoint]
+    @Binding var drawing: PKDrawing
 
     var body: some View {
-        GeometryReader { _ in
-            ZStack {
-                Path { path in
-                    guard points.count > 1 else { return }
-                    path.move(to: points[0])
-                    for point in points.dropFirst() {
-                        path.addLine(to: point)
-                    }
-                }
-                .stroke(Color.text.primary, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-            }
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        points.append(value.location)
-                    }
-            )
+        SignatureCanvasRepresentable(drawing: $drawing)
+    }
+}
+
+private struct SignatureCanvasRepresentable: UIViewRepresentable {
+    @Binding var drawing: PKDrawing
+
+    func makeUIView(context: Context) -> PKCanvasView {
+        let canvas = PKCanvasView()
+        canvas.backgroundColor = .clear
+        canvas.drawingPolicy = .anyInput
+        canvas.delegate = context.coordinator
+        return canvas
+    }
+
+    func updateUIView(_ uiView: PKCanvasView, context: Context) {
+        if uiView.drawing != drawing {
+            uiView.drawing = drawing
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    final class Coordinator: NSObject, PKCanvasViewDelegate {
+        let parent: SignatureCanvasRepresentable
+        init(parent: SignatureCanvasRepresentable) {
+            self.parent = parent
+        }
+
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            parent.drawing = canvasView.drawing
         }
     }
 }

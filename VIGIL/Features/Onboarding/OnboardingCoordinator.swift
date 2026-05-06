@@ -8,20 +8,7 @@ import Observation
 import SwiftData
 import SwiftUI
 
-enum OnboardingStep: Int, CaseIterable {
-    case scan
-    case q1Name
-    case q2Goal
-    case q3Weakness
-    case q4Serious
-    case q5Schedule
-    case q6Goals
-    case goalSetup
-    case contract
-    case permissions
-}
-
-struct GoalDraft: Identifiable, Codable, Sendable {
+struct SuggestedGoal: Identifiable, Codable {
     var id: UUID = UUID()
     var name: String
     var category: StatCategory
@@ -29,48 +16,76 @@ struct GoalDraft: Identifiable, Codable, Sendable {
     var targetValue: Double
     var unit: String
     var isCapGoal: Bool
-    var xpPerUnit: Int
-    var xpPenaltyPerUnit: Int
-    var icon: String
-    var colorHex: String
+    var active: Bool = true
 }
 
 @MainActor
 @Observable
 final class OnboardingCoordinator {
     var step: OnboardingStep = .scan
+    var queryIndex = 1
+    let totalQueries = 40
+    var abandonWarning = false
 
-    var q1Name: String = ""
-    var q2Building: String = ""
-    var q3Weakness: String = ""
-    var q4Seriousness: Double = 5
-    var wakeTime: Date = Calendar.current.date(bySettingHour: 6, minute: 30, second: 0, of: .now) ?? .now
-    var sleepTime: Date = Calendar.current.date(bySettingHour: 23, minute: 0, second: 0, of: .now) ?? .now
-    var q6GoalsText: String = ""
-    var goalDrafts: [GoalDraft] = []
-    var signatureHash: String = ""
+    var username = ""
+    var age = 21
+    var designationType = "Prefer Not To Disclose"
+    var lifeStatus = "Student"
+    var selectedWeaknesses: Set<String> = []
+    var weaknessSource = ""
+    var weaknessFrequency = "Daily"
+    var weaknessDuration = 60.0
+    var weaknessVerdict: VerdictOption = .trackOnly
+    var weaknessCap = 60.0
+
+    var fieldOfFocus = ""
+    var specificObjective = ""
+    var targetCompletion = "6mo"
+    var currentDailyInvestment = 2.0
+    var requiredDailyInvestment = 4.0
+
+    var physicalState = "Average"
+    var currentMass = 70.0
+    var targetMass = 75.0
+    var activityLevel = "Moderate"
+    var targetTrainingFrequency = 4.0
+    var trainingType: Set<String> = []
+
+    var currentBedTime = Calendar.current.date(bySettingHour: 23, minute: 0, second: 0, of: .now) ?? .now
+    var currentWakeTime = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: .now) ?? .now
+    var targetBedTime = Calendar.current.date(bySettingHour: 22, minute: 30, second: 0, of: .now) ?? .now
+    var targetWakeTime = Calendar.current.date(bySettingHour: 6, minute: 30, second: 0, of: .now) ?? .now
+    var sleepQuality = "Good"
+    var mindfulnessPractice = "Occasional"
+    var recoveryHobbies: Set<String> = []
+
+    var profileFragment = ""
+    var suggestedGoals: [SuggestedGoal] = []
+    var signatureHash = ""
 
     func advance() {
-        guard let next = OnboardingStep(rawValue: step.rawValue + 1) else { return }
-        step = next
+        guard let idx = OnboardingStep.allCases.firstIndex(of: step),
+              idx < OnboardingStep.allCases.count - 1 else { return }
+        step = OnboardingStep.allCases[idx + 1]
+        queryIndex = min(totalQueries, queryIndex + 1)
+        if step == .dailyGoalConfirmation { buildSuggestedGoals() }
     }
 
-    func back() {
-        guard let prev = OnboardingStep(rawValue: step.rawValue - 1) else { return }
-        step = prev
+    func registerAbandonAttempt() {
+        abandonWarning = true
     }
 
-    func complete(modelContext: ModelContext) throws {
+    func complete(modelContext: ModelContext) throws -> Player {
         let player = Player(
-            username: q1Name.trimmingCharacters(in: .whitespacesAndNewlines),
+            username: username.trimmingCharacters(in: .whitespacesAndNewlines),
             signatureHash: signatureHash,
-            wakeTime: wakeTime,
-            sleepTime: sleepTime,
-            focusHoursStart: wakeTime,
-            focusHoursEnd: sleepTime,
-            restHoursStart: sleepTime,
-            restHoursEnd: wakeTime,
-            dailyResetTime: Calendar.current.date(byAdding: .minute, value: -30, to: wakeTime) ?? wakeTime,
+            wakeTime: targetWakeTime,
+            sleepTime: targetBedTime,
+            focusHoursStart: targetWakeTime,
+            focusHoursEnd: targetBedTime,
+            restHoursStart: targetBedTime,
+            restHoursEnd: targetWakeTime,
+            dailyResetTime: Calendar.current.date(byAdding: .minute, value: -30, to: targetWakeTime) ?? targetWakeTime,
             notificationsVerdict: true,
             notificationsQuests: true,
             notificationsViolations: true,
@@ -78,29 +93,28 @@ final class OnboardingCoordinator {
             isLightModeEnabled: false,
             friendCode: Self.generateFriendCode()
         )
-
-        for draft in goalDrafts {
-            let goal = Goal(
-                name: draft.name,
-                category: draft.category,
-                goalType: draft.goalType,
-                targetValue: draft.targetValue,
-                unit: draft.unit,
-                isCapGoal: draft.isCapGoal,
-                xpPerUnit: draft.xpPerUnit,
-                xpPenaltyPerUnit: draft.xpPenaltyPerUnit,
-                isActive: true,
-                colorHex: draft.colorHex,
-                icon: draft.icon,
-                startDate: Date(),
-                player: player
-            )
+        for g in suggestedGoals where g.active {
+            let goal = Goal(name: g.name, category: g.category, goalType: g.goalType, targetValue: g.targetValue, unit: g.unit, isCapGoal: g.isCapGoal, xpPerUnit: 2, xpPenaltyPerUnit: g.isCapGoal ? 2 : 0, isActive: true, colorHex: "#6C63FF", icon: "scope", startDate: Date(), player: player)
             player.goals.append(goal)
             modelContext.insert(goal)
         }
-
         modelContext.insert(player)
         try modelContext.save()
+        return player
+    }
+
+    private func buildSuggestedGoals() {
+        if !suggestedGoals.isEmpty { return }
+        suggestedGoals = [
+            SuggestedGoal(name: "DEEP WORK", category: .intelligence, goalType: .duration, targetValue: requiredDailyInvestment * 60, unit: "minutes", isCapGoal: false),
+            SuggestedGoal(name: "TRAINING", category: .strength, goalType: .count, targetValue: max(1, targetTrainingFrequency), unit: "sessions", isCapGoal: false),
+            SuggestedGoal(name: "SLEEP CONSISTENCY", category: .vitality, goalType: .boolean, targetValue: 1, unit: "complete", isCapGoal: false),
+        ]
+        if weaknessVerdict == .limit {
+            suggestedGoals.append(
+                SuggestedGoal(name: "DISTRACTION CAP", category: .discipline, goalType: .duration, targetValue: weaknessCap, unit: "minutes", isCapGoal: true)
+            )
+        }
     }
 
     private static func generateFriendCode() -> String {
@@ -111,98 +125,58 @@ final class OnboardingCoordinator {
 
 struct OnboardingHostView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var progressRows: [OnboardingProgress]
     @State private var coordinator = OnboardingCoordinator()
     let onComplete: () -> Void
 
     var body: some View {
         ZStack {
             Color.bg.primary.ignoresSafeArea()
-            stepView
+            content
+            if coordinator.abandonWarning {
+                Text("YOU ATTEMPTED TO ABANDON EVALUATION. THE SYSTEM HAS NOTED THIS HESITATION. CONTINUE.")
+                    .font(.vigil.system)
+                    .foregroundStyle(Color.status.warning)
+                    .padding()
+                    .background(Color.bg.secondary)
+                    .overlay(Rectangle().stroke(Color.status.warning, lineWidth: 1))
+                    .padding()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) { coordinator.abandonWarning = false }
+                    }
+            }
         }
         .preferredColorScheme(.dark)
+        .onDisappear { coordinator.registerAbandonAttempt() }
     }
 
     @ViewBuilder
-    private var stepView: some View {
+    private var content: some View {
         switch coordinator.step {
         case .scan:
             ScanView { coordinator.advance() }
-        case .q1Name:
-            InterrogationView(
-                kind: .name,
-                textValue: $coordinator.q1Name,
-                multilineValue: .constant(""),
-                sliderValue: .constant(5),
-                wakeTime: .constant(.now),
-                sleepTime: .constant(.now),
-                onContinue: coordinator.advance
-            )
-        case .q2Goal:
-            InterrogationView(
-                kind: .building,
-                textValue: .constant(""),
-                multilineValue: $coordinator.q2Building,
-                sliderValue: .constant(5),
-                wakeTime: .constant(.now),
-                sleepTime: .constant(.now),
-                onContinue: coordinator.advance
-            )
-        case .q3Weakness:
-            InterrogationView(
-                kind: .weakness,
-                textValue: .constant(""),
-                multilineValue: $coordinator.q3Weakness,
-                sliderValue: .constant(5),
-                wakeTime: .constant(.now),
-                sleepTime: .constant(.now),
-                onContinue: coordinator.advance
-            )
-        case .q4Serious:
-            InterrogationView(
-                kind: .seriousness,
-                textValue: .constant(""),
-                multilineValue: .constant(""),
-                sliderValue: $coordinator.q4Seriousness,
-                wakeTime: .constant(.now),
-                sleepTime: .constant(.now),
-                onContinue: coordinator.advance
-            )
-        case .q5Schedule:
-            InterrogationView(
-                kind: .schedule,
-                textValue: .constant(""),
-                multilineValue: .constant(""),
-                sliderValue: .constant(5),
-                wakeTime: $coordinator.wakeTime,
-                sleepTime: $coordinator.sleepTime,
-                onContinue: coordinator.advance
-            )
-        case .q6Goals:
-            InterrogationView(
-                kind: .goalsPrompt,
-                textValue: .constant(""),
-                multilineValue: $coordinator.q6GoalsText,
-                sliderValue: .constant(5),
-                wakeTime: .constant(.now),
-                sleepTime: .constant(.now),
-                onContinue: coordinator.advance
-            )
-        case .goalSetup:
-            GoalSetupView(drafts: $coordinator.goalDrafts) {
-                coordinator.advance()
-            }
-        case .contract:
-            ContractView { signatureHash in
-                coordinator.signatureHash = signatureHash
-                coordinator.advance()
-            }
+        case .identity:
+            InterrogationView(coordinator: coordinator) { coordinator.advance() }
+        case .weaknessCascade:
+            GoalSetupView(coordinator: coordinator) { coordinator.advance() }
+        case .profileFragmentOne, .profileFragmentTwo, .profileFragmentThree, .profileFragmentFour:
+            FragmentView(step: coordinator.step) { coordinator.advance() }
+        case .intelligence:
+            IntelligenceView(coordinator: coordinator) { coordinator.advance() }
+        case .strength:
+            StrengthView(coordinator: coordinator) { coordinator.advance() }
+        case .vitality:
+            VitalityView(coordinator: coordinator) { coordinator.advance() }
+        case .dailyGoalConfirmation:
+            DailyGoalsConfirmationView(coordinator: coordinator) { coordinator.advance() }
         case .permissions:
-            PermissionsView {
-                do {
-                    try coordinator.complete(modelContext: modelContext)
+            PermissionsView { coordinator.advance() }
+        case .contract:
+            ContractView(goalsText: coordinator.suggestedGoals.filter(\.active).map(\.name)) { hash in
+                coordinator.signatureHash = hash
+                if let player = try? coordinator.complete(modelContext: modelContext) {
+                    Task { await QuestTriggerService.shared.issueImmediateWelcomeQuest(for: player, modelContext: modelContext) }
                     onComplete()
-                } catch {
-                    // Keep onboarding active if persistence fails.
                 }
             }
         }

@@ -10,21 +10,24 @@ import SwiftUI
 
 extension Font {
     enum vigil {
-        static let display: Font = .system(size: 48, weight: .black, design: .rounded)
+        static let display: Font = .custom("Orbitron", size: 48, relativeTo: .largeTitle)
 
-        static let titleLarge: Font = .system(size: 34, weight: .bold, design: .default)
+        static let titleLarge: Font = .system(size: 28, weight: .bold, design: .monospaced)
 
-        static let title: Font = .system(size: 28, weight: .semibold, design: .default)
+        static let title: Font = .system(size: 22, weight: .bold, design: .monospaced)
 
-        static let headline: Font = .system(size: 17, weight: .semibold, design: .default)
+        static let headline: Font = .system(size: 17, weight: .semibold, design: .monospaced)
 
-        static let body: Font = .system(size: 15, weight: .regular, design: .default)
+        static let body: Font = .system(size: 14, weight: .regular, design: .monospaced)
 
-        static let caption: Font = .system(size: 12, weight: .regular, design: .monospaced)
+        static let caption: Font = .system(size: 11, weight: .regular, design: .monospaced)
 
-        static let system: Font = .system(size: 14, weight: .medium, design: .monospaced)
+        static let system: Font = .system(size: 13, weight: .medium, design: .monospaced)
 
         /// Goal session countdown / elapsed digits (dashboard timer).
         static let timerDigits: Font = .system(size: 26, weight: .semibold, design: .monospaced)
+
+        /// Apply with `.tracking(Font.vigil.displayTracking)` on display text.
+        static let displayTracking: CGFloat = -2
     }
 }

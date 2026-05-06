@@ -38,30 +38,22 @@ struct RankCardView: View {
     }
 
     private var gradeBadge: some View {
-        Text(player.currentRank.rawValue)
-            .font(Font.vigil.display)
-            .foregroundStyle(rankColor(for: player.currentRank))
-            .minimumScaleFactor(0.85)
-            .lineLimit(1)
-            .frame(minWidth: 76, alignment: .center)
-            .padding(.horizontal, Spacing.lg.rawValue)
-            .padding(.vertical, Spacing.sm.rawValue + 4)
-            .background(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(rankColor(for: player.currentRank).opacity(0.22))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .strokeBorder(rankColor(for: player.currentRank).opacity(0.65), lineWidth: 1)
-            )
-            .fixedSize()
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Rank \(player.currentRank.rawValue)")
+        VStack(alignment: .leading, spacing: 6) {
+            Text("RANK: \(player.currentRank.rawValue)")
+                .font(.vigil.system)
+                .foregroundStyle(rankColor(for: player.currentRank))
+            Rectangle()
+                .fill(Color.bg.secondary)
+                .frame(height: 2)
+                .overlay(alignment: .leading) {
+                    Rectangle().fill(Color.accent.primary).frame(width: 120, height: 2)
+                }
+        }
     }
 
     private var identityBlock: some View {
         VStack(alignment: .leading, spacing: Spacing.xs.rawValue) {
-            Text(player.username.isEmpty ? "PLAYER" : player.username)
+            Text((player.username.isEmpty ? "PLAYER" : player.username).asSystemID)
                 .font(Font.vigil.headline)
                 .foregroundStyle(Color.text.primary)
                 .fixedSize(horizontal: false, vertical: true)

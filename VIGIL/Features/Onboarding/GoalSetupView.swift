@@ -6,80 +6,54 @@
 import SwiftUI
 
 struct GoalSetupView: View {
-    @Binding var drafts: [GoalDraft]
+    @Bindable var coordinator: OnboardingCoordinator
     let onContinue: () -> Void
-
-    @State private var input = ""
-    @State private var isParsing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.lg.rawValue) {
-            Text("Define your goals.")
-                .font(Font.vigil.titleLarge)
-                .foregroundStyle(Color.text.primary)
+            Text("CASCADE ANALYSIS")
+                .font(.vigil.titleLarge)
+                .foregroundStyle(Color.accent.primary)
 
-            TextField("I want to limit pool to 1 hour", text: $input)
+            TextField("IDENTIFY THE SOURCE", text: $coordinator.weaknessSource)
                 .padding(Spacing.md.rawValue)
                 .background(Color.bg.secondary)
-                .foregroundStyle(Color.text.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay(Rectangle().stroke(Color.accent.primary, lineWidth: 1))
 
-            Button(action: parseAndAdd) {
-                Text(isParsing ? "PARSING..." : "ADD GOAL")
-                    .font(Font.vigil.headline)
-                    .foregroundStyle(Color.bg.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Spacing.sm.rawValue)
-                    .background(Color.accent.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-            .buttonStyle(.plain)
-            .disabled(input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isParsing)
-
-            ScrollView {
-                VStack(spacing: Spacing.sm.rawValue) {
-                    ForEach(drafts) { draft in
-                        VStack(alignment: .leading, spacing: Spacing.xs.rawValue) {
-                            Text(draft.name.uppercased())
-                                .font(Font.vigil.headline)
-                                .foregroundStyle(Color.text.primary)
-                            Text("\(draft.goalType.rawValue.uppercased()) • \(Int(draft.targetValue)) \(draft.unit)")
-                                .font(Font.vigil.body)
-                                .foregroundStyle(Color.text.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(Spacing.md.rawValue)
-                        .background(Color.bg.tertiary)
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    }
+            Picker("FREQUENCY", selection: $coordinator.weaknessFrequency) {
+                ForEach(["Multiple Times Per Day", "Daily", "Few Times Per Week", "Weekly", "Less Often"], id: \.self) {
+                    Text($0.uppercased()).tag($0)
                 }
             }
+            .pickerStyle(.segmented)
 
-            Button(action: onContinue) {
-                Text("CONTINUE")
-                    .font(Font.vigil.headline)
-                    .foregroundStyle(Color.bg.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, Spacing.md.rawValue)
-                    .background(drafts.isEmpty ? Color.bg.tertiary : Color.accent.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            VStack(alignment: .leading) {
+                Text("DURATION PER SESSION: \(Int(coordinator.weaknessDuration)) MIN")
+                    .font(.vigil.system)
+                Slider(value: $coordinator.weaknessDuration, in: 15...480, step: 5)
+                    .tint(Color.accent.primary)
             }
-            .buttonStyle(.plain)
-            .disabled(drafts.isEmpty)
+
+            Picker("STATE YOUR VERDICT", selection: $coordinator.weaknessVerdict) {
+                Text("LIMIT").tag(VerdictOption.limit)
+                Text("ELIMINATE").tag(VerdictOption.eliminate)
+                Text("REPLACE").tag(VerdictOption.replace)
+                Text("TRACK ONLY").tag(VerdictOption.trackOnly)
+            }
+            .pickerStyle(.segmented)
+
+            if coordinator.weaknessVerdict == .limit {
+                VStack(alignment: .leading) {
+                    Text("STATE THE CAP: \(Int(coordinator.weaknessCap)) MIN")
+                        .font(.vigil.system)
+                    Slider(value: $coordinator.weaknessCap, in: 15...480, step: 5)
+                        .tint(Color.accent.primary)
+                }
+            }
+            Spacer()
+            VIGILButton(title: "CONTINUE", isDisabled: coordinator.weaknessSource.isEmpty, action: onContinue)
         }
         .padding(Spacing.md.rawValue)
         .background(Color.bg.primary.ignoresSafeArea())
-    }
-
-    private func parseAndAdd() {
-        let raw = input.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !raw.isEmpty else { return }
-        isParsing = true
-        Task {
-            let parsed = await VIGILAIService.shared.parseGoalDraft(from: raw)
-            drafts.append(parsed)
-            input = ""
-            isParsing = false
-        }
     }
 }

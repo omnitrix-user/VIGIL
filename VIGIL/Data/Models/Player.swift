@@ -10,12 +10,13 @@ import SwiftData
 final class Player {
     var id: UUID
     var username: String
+    var profileImageData: Data?
     var createdAt: Date
     var currentRank: Rank
     var totalXP: Int
-    var intellect: StatBlock
+    var intelligence: StatBlock
     var strength: StatBlock
-    var spirit: StatBlock
+    var vitality: StatBlock
     var discipline: StatBlock
     var perfectDayStreak: Int
     var showedUpStreak: Int
@@ -60,6 +61,7 @@ final class Player {
     init(
         id: UUID = UUID(),
         username: String = "",
+        profileImageData: Data? = nil,
         createdAt: Date = Date(),
         currentRank: Rank = Rank.E,
         totalXP: Int = 0,
@@ -102,12 +104,13 @@ final class Player {
         )
         self.id = id
         self.username = username
+        self.profileImageData = profileImageData
         self.createdAt = createdAt
         self.currentRank = currentRank
         self.totalXP = totalXP
-        self.intellect = emptyStat
+        self.intelligence = emptyStat
         self.strength = emptyStat
-        self.spirit = emptyStat
+        self.vitality = emptyStat
         self.discipline = emptyStat
         self.perfectDayStreak = perfectDayStreak
         self.showedUpStreak = showedUpStreak

@@ -10,13 +10,20 @@ enum Rank: String, CaseIterable, Codable {
 }
 
 enum StatCategory: String, Codable {
-    case intellect, strength, spirit, discipline
+    case intelligence, strength, vitality, discipline
 }
 
 enum GoalType: String, Codable {
     case duration
     case count
     case boolean
+}
+
+enum VerdictOption: String, Codable {
+    case limit
+    case eliminate
+    case replace
+    case trackOnly
 }
 
 enum QuestType: String, Codable {

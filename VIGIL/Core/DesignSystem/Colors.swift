@@ -16,9 +16,9 @@ extension Color {
     }
 
     enum bg {
-        static let primary = Color.vigilHex(0x0A0A0F)
-        static let secondary = Color.vigilHex(0x0E0E1E)
-        static let tertiary = Color.vigilHex(0x12122A)
+        static let primary = Color.vigilHex(0x000000)
+        static let secondary = Color.vigilHex(0x0A0A14)
+        static let tertiary = Color.vigilHex(0x0E0E1E)
     }
 
     enum accent {
@@ -38,6 +38,10 @@ extension Color {
         static let primary = Color.vigilHex(0xE2E8F0)
         static let secondary = Color.vigilHex(0x94A3B8)
         static let muted = Color.vigilHex(0x64748B)
+    }
+
+    enum scanline {
+        static let color = Color.vigilHex(0x6C63FF, alpha: 0.04)
     }
 
     enum rank {

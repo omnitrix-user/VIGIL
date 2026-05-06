@@ -61,6 +61,8 @@ struct DashboardView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.xl.rawValue) {
+                        VIGILButton(title: "MANAGE DAILY GOALS", action: {})
+                            .padding(.horizontal, Spacing.md.rawValue)
                         TodayGoalsView(player: player)
 
                         streakFooter(player: player)

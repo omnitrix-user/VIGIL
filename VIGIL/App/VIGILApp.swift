@@ -30,7 +30,14 @@ struct VIGILApp: App {
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            // Schema migration fallback: stat rename + onboarding redesign can invalidate local store.
+            // We intentionally wipe the local SwiftData store once and rebuild a clean container.
+            wipeSwiftDataStoreFiles()
+            do {
+                return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            } catch {
+                fatalError("Could not create ModelContainer after reset: \(error)")
+            }
         }
     }()
 
@@ -39,6 +46,19 @@ struct VIGILApp: App {
             AppLaunchGate(appRouter: $appRouter)
                 .modelContainer(sharedModelContainer)
         }
+    }
+}
+
+private func wipeSwiftDataStoreFiles() {
+    let fm = FileManager.default
+    guard let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
+    let candidates = [
+        appSupport.appendingPathComponent("default.store"),
+        appSupport.appendingPathComponent("default.store-shm"),
+        appSupport.appendingPathComponent("default.store-wal"),
+    ]
+    for url in candidates where fm.fileExists(atPath: url.path) {
+        try? fm.removeItem(at: url)
     }
 }
 
@@ -66,12 +86,14 @@ private struct AppLaunchGate: View {
             .fullScreenCover(isPresented: $showOnboarding) {
                 OnboardingHostView {
                     showOnboarding = false
+                    appRouter.bootContext = .postOnboarding
+                    appRouter.shouldShowBoot = true
                     appRouter.refreshBootTriggerState()
                 }
                 .interactiveDismissDisabled()
             }
             .fullScreenCover(isPresented: bootCoverBinding) {
-                BootSequenceView {
+                BootSequenceView(context: appRouter.bootContext) {
                     appRouter.completeBootSequence()
                 }
                 .interactiveDismissDisabled()

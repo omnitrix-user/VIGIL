@@ -46,9 +46,9 @@ final class VIGILAIService {
 
     func generateQuest(trigger: QuestTrigger) async -> Quest {
         let context = AIContext(
-            intellect: .init(currentXP: 0, totalXP: 0, level: 1, xpToNextLevel: 0, debuffActive: false, debuffExpiresAt: nil, weekHistory: []),
+            intelligence: .init(currentXP: 0, totalXP: 0, level: 1, xpToNextLevel: 0, debuffActive: false, debuffExpiresAt: nil, weekHistory: []),
             strength: .init(currentXP: 0, totalXP: 0, level: 1, xpToNextLevel: 0, debuffActive: false, debuffExpiresAt: nil, weekHistory: []),
-            spirit: .init(currentXP: 0, totalXP: 0, level: 1, xpToNextLevel: 0, debuffActive: false, debuffExpiresAt: nil, weekHistory: []),
+            vitality: .init(currentXP: 0, totalXP: 0, level: 1, xpToNextLevel: 0, debuffActive: false, debuffExpiresAt: nil, weekHistory: []),
             discipline: .init(currentXP: 0, totalXP: 0, level: 1, xpToNextLevel: 0, debuffActive: false, debuffExpiresAt: nil, weekHistory: []),
             activeGoals: [],
             activeQuests: [],
@@ -99,37 +99,6 @@ final class VIGILAIService {
         return parsePattern(raw: raw) ?? fallbackPatternInsight(from: logs)
     }
 
-    func parseGoalDraft(from naturalLanguage: String) async -> GoalDraft {
-        let lower = naturalLanguage.lowercased()
-        let isCap = lower.contains("limit") || lower.contains("max") || lower.contains("no more than")
-        let numeric = Self.extractFirstNumber(from: lower) ?? 30
-        let unit = lower.contains("hour") ? "minutes" : (lower.contains("session") ? "sessions" : "minutes")
-        let value = lower.contains("hour") ? numeric * 60 : numeric
-
-        let category: StatCategory
-        if lower.contains("workout") || lower.contains("run") || lower.contains("gym") {
-            category = .strength
-        } else if lower.contains("meditat") || lower.contains("sleep") {
-            category = .spirit
-        } else if lower.contains("phone") || lower.contains("social") || lower.contains("pool") {
-            category = .discipline
-        } else {
-            category = .intellect
-        }
-
-        return GoalDraft(
-            name: naturalLanguage.capitalized,
-            category: category,
-            goalType: unit == "sessions" ? .count : .duration,
-            targetValue: value,
-            unit: unit,
-            isCapGoal: isCap,
-            xpPerUnit: unit == "sessions" ? 20 : 1,
-            xpPenaltyPerUnit: isCap ? 2 : 0,
-            icon: category == .discipline ? "hand.raised.fill" : "target",
-            colorHex: "#6C63FF"
-        )
-    }
 
     func retryQueuedJobsIfAvailable() async {
         guard canUseFoundationModels else { return }
@@ -146,6 +115,20 @@ final class VIGILAIService {
         queue = unresolved
         saveQueue(queue)
         queuedJobsCount = queue.count
+    }
+
+    func categorizeActivity(_ activityName: String) async -> (stat: StatCategory, reasoning: String) {
+        let lowered = activityName.lowercased()
+        if lowered.contains("walk") || lowered.contains("workout") || lowered.contains("run") {
+            return (.strength, "\(activityName) -> STRENGTH (physical activity)")
+        }
+        if lowered.contains("sleep") || lowered.contains("recover") || lowered.contains("meditat") {
+            return (.vitality, "\(activityName) -> VITALITY (recovery and regulation)")
+        }
+        if lowered.contains("study") || lowered.contains("code") || lowered.contains("read") {
+            return (.intelligence, "\(activityName) -> INTELLIGENCE (cognitive focus)")
+        }
+        return (.discipline, "\(activityName) -> DISCIPLINE (consistency and control)")
     }
 
     private var canUseFoundationModels: Bool {
@@ -284,9 +267,9 @@ final class VIGILAIService {
         let weakHours = [9, 14, 21]
         let failurePatterns = logs.filter { !$0.isPerfectDay }.prefix(3).map { _ in "Consistency drop detected" }
         let statImbalances: [String: Double] = [
-            StatCategory.intellect.rawValue: 0.25,
+            StatCategory.intelligence.rawValue: 0.25,
             StatCategory.strength.rawValue: 0.25,
-            StatCategory.spirit.rawValue: 0.2,
+            StatCategory.vitality.rawValue: 0.2,
             StatCategory.discipline.rawValue: 0.3,
         ]
         return PatternInsight(weakHours: weakHours, failurePatterns: failurePatterns, statImbalances: statImbalances)
@@ -296,12 +279,6 @@ final class VIGILAIService {
         if frequency >= 5 { return .nuclear }
         if frequency >= 3 { return .statDebuff }
         return .xpLoss
-    }
-
-    private static func extractFirstNumber(from text: String) -> Double? {
-        let parts = text.split { !$0.isNumber && $0 != "." }
-        guard let token = parts.first else { return nil }
-        return Double(token)
     }
 
     private let fallbackEvaluatingLine = "The system is evaluating. Stand by."
