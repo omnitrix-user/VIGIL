@@ -52,12 +52,8 @@ struct VIGILApp: App {
 private func wipeSwiftDataStoreFiles() {
     let fm = FileManager.default
     guard let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
-    let candidates = [
-        appSupport.appendingPathComponent("default.store"),
-        appSupport.appendingPathComponent("default.store-shm"),
-        appSupport.appendingPathComponent("default.store-wal"),
-    ]
-    for url in candidates where fm.fileExists(atPath: url.path) {
+    guard let contents = try? fm.contentsOfDirectory(at: appSupport, includingPropertiesForKeys: nil) else { return }
+    for url in contents where url.lastPathComponent.contains(".store") {
         try? fm.removeItem(at: url)
     }
 }
