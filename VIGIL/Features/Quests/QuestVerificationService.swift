@@ -32,19 +32,28 @@ struct QuestVerificationService {
     }
 
     private func verifyScreenTimeQuest(_ quest: Quest, modelContext: ModelContext) -> Bool {
-        var descriptor = FetchDescriptor<PhoneBlockRecord>(
-            predicate: #Predicate { $0.goalId == quest.id && !$0.wasViolated && !$0.isActive }
-        )
-        descriptor.fetchLimit = 1
-        return (try? modelContext.fetch(descriptor).first) != nil
+        var descriptor = FetchDescriptor<PhoneBlockRecord>()
+        descriptor.fetchLimit = 256
+        let rows = (try? modelContext.fetch(descriptor)) ?? []
+        return rows.contains {
+            $0.goalId == quest.id && $0.wasViolated == false && $0.isActive == false
+        }
     }
 
     private func verifyTimerQuest(_ quest: Quest, modelContext: ModelContext) -> Bool {
-        guard quest.goalType == .duration || quest.goalType == .count else { return false }
-        let hasCompletion = quest.player?.goals.contains(where: { goal in
-            goal.id == quest.id && !goal.completions.isEmpty
-        }) ?? false
-        return hasCompletion
+        guard let player = quest.player else { return false }
+
+        // Prefer explicit mapping if triggerPattern stores a goal UUID.
+        if let pattern = quest.triggerPattern,
+           let goalID = UUID(uuidString: pattern),
+           let goal = player.goals.first(where: { $0.id == goalID }) {
+            return goal.completions.count > 0
+        }
+
+        // Fallback: any goal in the same stat category with logged completion.
+        return player.goals.contains { goal in
+            goal.category == quest.statTarget && goal.completions.count > 0
+        }
     }
 
     private func verifyAIQuest(_ quest: Quest, modelContext: ModelContext) async -> Bool {
