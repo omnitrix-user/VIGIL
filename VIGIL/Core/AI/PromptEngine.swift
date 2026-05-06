@@ -93,6 +93,36 @@ Input:
 """
     }
 
+    static func activityCategorizationPrompt(
+        context: PlayerCategorizationContext,
+        activities: [ActivityEvent]
+    ) -> String {
+        """
+System:
+"You categorize Player activities for the VIGIL discipline system.
+The Player has declared specific distractions and goals during initialization.
+Match activities against those declarations first before generic categorization.
+Output strict JSON only. No prose. No commentary."
+
+User:
+{
+  "declaredDistractions": \(encode(context.declaredDistractions)),
+  "declaredGoals": \(encode(context.declaredGoals)),
+  "activities": \(encode(activities))
+}
+
+Required output schema:
+[
+  {
+    "id": "activity_uuid",
+    "category": "one of the enum values",
+    "confidence": 0.0-1.0,
+    "reasoning": "max 12 words, cold tone, no warmth"
+  }
+]
+"""
+    }
+
     private static func encode<T: Encodable>(_ value: T) -> String {
         let enc = JSONEncoder()
         enc.dateEncodingStrategy = .iso8601

@@ -159,6 +159,10 @@ final class VIGILAIService {
         return fallback.isEmpty ? fallbackEvaluatingLine : fallback
     }
 
+    func modelJSON(prompt: String) async -> String {
+        await modelText(prompt: prompt, fallback: "[]")
+    }
+
     private func enqueue(kind: QueuedJob.Kind, payload: String) {
         var queue = loadQueue()
         queue.append(

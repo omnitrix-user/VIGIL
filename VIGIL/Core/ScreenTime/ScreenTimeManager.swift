@@ -205,6 +205,23 @@ final class ScreenTimeManager {
         let penalty = max(5, goal.xpPenaltyPerUnit)
         ScreenTimeStatXP.applyDiscipline(delta: -penalty, to: player)
         player.totalXP = max(0, player.totalXP - penalty)
+        let event = ActivityEvent(
+            id: UUID(),
+            source: .screenTime,
+            identifier: record.deviceActivityNameRaw,
+            name: goal.name,
+            startedAt: record.startTime,
+            durationMinutes: record.endTime.timeIntervalSince(record.startTime) / 60.0
+        )
+        let rows = await ActivityCategorizationService.shared.categorize(events: [event], player: player, modelContext: modelContext)
+        if let row = rows.first {
+            _ = XPAwardEngine.apply(
+                category: row.category,
+                minutes: event.durationMinutes,
+                player: player,
+                goalCategory: goal.category
+            )
+        }
 
         try? modelContext.save()
         reloadCaches(from: modelContext)

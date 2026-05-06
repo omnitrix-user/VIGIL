@@ -198,6 +198,26 @@ final class GoalTimerManager {
 
         if let player = goal.player, award.netXP != 0 {
             StatXP.apply(delta: award.netXP, category: goal.category, to: player)
+            let event = ActivityEvent(
+                id: UUID(),
+                source: .timer,
+                identifier: goal.id.uuidString,
+                name: goal.name,
+                startedAt: Date(),
+                durationMinutes: minutesElapsed
+            )
+            Task { @MainActor in
+                let rows = await ActivityCategorizationService.shared.categorize(events: [event], player: player, modelContext: modelContext)
+                if let row = rows.first {
+                    _ = XPAwardEngine.apply(
+                        category: row.category,
+                        minutes: minutesElapsed,
+                        player: player,
+                        goalCategory: goal.category
+                    )
+                    try? modelContext.save()
+                }
+            }
         }
 
         try modelContext.save()

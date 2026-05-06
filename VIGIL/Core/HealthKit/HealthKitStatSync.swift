@@ -61,6 +61,30 @@ enum HealthKitStatSync {
         strengthTarget: Int,
         spiritTarget: Int
     ) async {
+        let events: [ActivityEvent] = [
+            ActivityEvent(
+                id: UUID(),
+                source: .healthKitWorkout,
+                identifier: "hk.training.daily",
+                name: "HealthKit training aggregate",
+                startedAt: Date(),
+                durationMinutes: Double(max(1, strengthTarget))
+            ),
+            ActivityEvent(
+                id: UUID(),
+                source: .healthKitCategory,
+                identifier: "sleepAnalysis",
+                name: "HealthKit recovery aggregate",
+                startedAt: Date(),
+                durationMinutes: Double(max(1, spiritTarget))
+            ),
+        ]
+        _ = await ActivityCategorizationService.shared.categorize(
+            events: events,
+            player: player,
+            modelContext: modelContext
+        )
+
         var ledger = loadLedger()
         let previous = ledger[dayId] ?? DayTotals(strength: 0, vitality: 0)
 
